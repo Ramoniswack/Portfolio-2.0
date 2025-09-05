@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, useCallback } from "react"
 
 export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null)
@@ -9,19 +9,36 @@ export function CustomCursor() {
   const scrollCursorRef = useRef<HTMLDivElement>(null)
   const [cursorState, setCursorState] = useState<'normal' | 'hover' | 'scroll'>('normal')
   const [isScrolling, setIsScrolling] = useState(false)
+  
+  // Performance optimization: use refs for tracking position
+  const positionRef = useRef({ x: 0, y: 0 })
+  const animationIdRef = useRef<number | null>(null)
+
+  // Ultra-smooth cursor movement with requestAnimationFrame
+  const updateCursorPosition = useCallback(() => {
+    if (cursorRef.current) {
+      cursorRef.current.style.transform = `translate3d(${positionRef.current.x - 24}px, ${positionRef.current.y - 24}px, 0)`
+    }
+  }, [])
 
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout
 
-    // Handle mouse movement
+    // Optimized mouse movement with RAF for 60fps smoothness
     const handleMouseMove = (e: MouseEvent) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.left = `${e.clientX}px`
-        cursorRef.current.style.top = `${e.clientY}px`
+      positionRef.current.x = e.clientX
+      positionRef.current.y = e.clientY
+      
+      // Cancel previous frame
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current)
       }
+      
+      // Schedule update on next frame
+      animationIdRef.current = requestAnimationFrame(updateCursorPosition)
     }
 
-    // Handle scroll detection
+    // Handle scroll detection with reduced timeout for snappier response
     const handleScroll = () => {
       setIsScrolling(true)
       setCursorState('scroll')
@@ -30,10 +47,10 @@ export function CustomCursor() {
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false)
         setCursorState('normal')
-      }, 150)
+      }, 100) // Reduced from 150ms to 100ms
     }
 
-    // Handle mouse over interactive elements
+    // Optimized hover detection with delegation
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       if (!isScrolling && (
@@ -77,13 +94,13 @@ export function CustomCursor() {
       if (cursorRef.current) cursorRef.current.style.opacity = '0'
     }
 
-    // Add event listeners
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseenter', handleMouseEnter)
-    document.addEventListener('mouseleave', handleMouseLeave)
+    // Add event listeners with passive option for better performance
+    document.addEventListener('mousemove', handleMouseMove, { passive: true })
+    document.addEventListener('mouseenter', handleMouseEnter, { passive: true })
+    document.addEventListener('mouseleave', handleMouseLeave, { passive: true })
     window.addEventListener('scroll', handleScroll, { passive: true })
-    document.addEventListener('mouseover', handleMouseOver)
-    document.addEventListener('mouseout', handleMouseOut)
+    document.addEventListener('mouseover', handleMouseOver, { passive: true })
+    document.addEventListener('mouseout', handleMouseOut, { passive: true })
 
     // Hide default cursor
     document.body.style.cursor = 'none'
@@ -96,9 +113,12 @@ export function CustomCursor() {
       document.removeEventListener('mouseover', handleMouseOver)
       document.removeEventListener('mouseout', handleMouseOut)
       clearTimeout(scrollTimeout)
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current)
+      }
       document.body.style.cursor = 'auto'
     }
-  }, [isScrolling])
+  }, [isScrolling, updateCursorPosition])
 
   return (
     <div 
@@ -112,9 +132,9 @@ export function CustomCursor() {
         height: '48px',
         pointerEvents: 'none',
         zIndex: 9999,
-        transform: 'translate(-50%, -50%)',
         opacity: 0,
         transition: 'opacity 0.2s ease',
+        willChange: 'transform', // Optimize for animations
       }}
     >
       {/* Normal cursor - cursor.svg */}
@@ -132,9 +152,10 @@ export function CustomCursor() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           opacity: cursorState === 'normal' ? 1 : 0,
-          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'normal' ? 'scale(1)' : 'scale(0.8)',
           filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          willChange: 'transform, opacity',
         }}
       />
       
@@ -153,9 +174,10 @@ export function CustomCursor() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           opacity: cursorState === 'hover' ? 1 : 0,
-          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'hover' ? 'scale(1.1)' : 'scale(0.8)',
           filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          willChange: 'transform, opacity',
         }}
       />
       
@@ -174,9 +196,10 @@ export function CustomCursor() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           opacity: cursorState === 'scroll' ? 1 : 0,
-          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'scroll' ? 'scale(1)' : 'scale(0.8)',
           filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          willChange: 'transform, opacity',
         }}
       />
     </div>

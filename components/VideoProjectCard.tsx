@@ -40,7 +40,7 @@ export function VideoProjectCard({
     handleCanPlay
   } = useVideoLoader({
     src: videoClip,
-    preload: 'auto',
+    preload: 'metadata', // Changed from 'auto' to 'metadata' for faster initial load
     autoplay: true,
     threshold: 0.1
   })
