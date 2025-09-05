@@ -5,6 +5,7 @@ import { CustomCursor } from "@/components/CustomCursor"
 import { SimplePreloader } from "@/components/SimplePreloader"
 import { SectionWaveTransition } from "@/components/SectionWaveTransition"
 import { usePreloader } from "@/components/PreloaderProvider"
+import { useCompilation } from "@/components/CompilationProvider"
 import { registerCustomEases } from "@/lib/eases"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -12,6 +13,7 @@ import { CustomEase } from "gsap/CustomEase"
 import Image from "next/image"
 import { VideoProjectCard } from "@/components/VideoProjectCard"
 import { ExternalLink } from "lucide-react"
+import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
 
 // Define the types locally since we're no longer using GitHub API
 interface User {
@@ -54,6 +56,7 @@ if (typeof window !== "undefined") {
 export default function HomePage() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null)
   const { shouldShowPreloader, setPreloaderComplete } = usePreloader()
+  const { completePageLoad, isNavigating } = useCompilation()
 
   // Remove the complex preloader logic - now handled by PreloaderProvider
 
@@ -64,10 +67,10 @@ export default function HomePage() {
     // Set static portfolio data - updated with correct GitHub information
     setPortfolioData({
       user: {
-        name: "R.a.mon Tiwari",
+        name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Exploring the modern web stack — React, TypeScript, Zod, and beyond.",
+        bio: "Exploring the modern web stack - React, TypeScript, Zod, and beyond.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -119,7 +122,7 @@ export default function HomePage() {
           id: 4,
           name: "aaja-ta-suree",
           full_name: "Ramoniswack/aaja-ta-suree",
-          description: "Modern To-Do app built with React, TypeScript & Zod — simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali",
+          description: "Modern To-Do app built with React, TypeScript & Zod - simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali",
           html_url: "https://github.com/Ramoniswack/aaja-ta-suree",
           homepage: "https://aajatasure.vercel.app",
           topics: ["react", "typescript", "zod", "todo", "authentication", "tailwind"],
@@ -145,30 +148,91 @@ export default function HomePage() {
     })
 
     if (!shouldShowPreloader) {
-      setupScrollAnimations()
+      console.log(`🏠 Home page setup triggered`)
+      
+      // More robust waiting for home page readiness
+      const waitForPageReady = () => {
+        const isDocumentComplete = document.readyState === 'complete'
+        const hasCorrectContent = document.querySelector('[data-page="home"]') !== null
+        const hasPortfolioData = portfolioData !== null
+        const hasCorrectURL = window.location.pathname === '/'
+        
+        const isContentReady = isDocumentComplete && 
+                             hasCorrectContent && 
+                             hasPortfolioData && 
+                             hasCorrectURL
+        
+        console.log(`🔍 Home page readiness:`, {
+          isDocumentComplete,
+          hasCorrectContent,
+          hasPortfolioData,
+          hasCorrectURL,
+          isContentReady,
+          readyState: document.readyState,
+          currentURL: window.location.pathname
+        })
+        
+        if (!isContentReady) {
+          setTimeout(waitForPageReady, 200)
+          return
+        }
+        
+        setupScrollAnimations()
+        
+        // Wait for stability before completing
+        console.log(`⏳ Home page waiting for stability...`)
+        setTimeout(() => {
+          // Final verification
+          const finalCheck = document.querySelector('[data-page="home"]') !== null &&
+                            window.location.pathname === '/' &&
+                            document.readyState === 'complete'
+          
+          if (finalCheck) {
+            console.log(`🏁 Home page completing load`)
+            completePageLoad()
+          } else {
+            console.log(`⚠️ Home page final check failed, retrying...`)
+            setTimeout(waitForPageReady, 500)
+          }
+        }, 500)
+      }
+      
+      // Start checking after initial delay
+      setTimeout(() => {
+        waitForPageReady()
+      }, 300)
     }
-  }, [shouldShowPreloader])
+
+    // Cleanup function to kill all ScrollTriggers and animations
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      gsap.killTweensOf(".animate-on-scroll")
+    }
+  }, [shouldShowPreloader, completePageLoad, isNavigating])
 
   const setupScrollAnimations = () => {
+    // Use the utility function for safe scroll animations
     gsap.utils.toArray(".animate-on-scroll").forEach((element: any) => {
-      gsap.fromTo(
+      createScrollAnimation(
         element,
         {
-          opacity: 0,
-          y: 60,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power2.out",
+          from: {
+            opacity: 0,
+            y: 60,
+          },
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out",
+          },
           scrollTrigger: {
             trigger: element,
             start: "top 80%",
             end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
+          }
         },
+        isNavigating
       )
     })
 
@@ -176,20 +240,23 @@ export default function HomePage() {
     gsap.utils.toArray("section").forEach((section: any, i: number) => {
       const gradientFrom = i % 2 === 0 ? "rgba(99,102,241,0.08)" : "rgba(56,189,248,0.08)"
       const gradientTo = "rgba(0,0,0,0)"
-      gsap.fromTo(
-        section,
-        { backgroundImage: `radial-gradient(1200px 200px at 50% 120%, ${gradientFrom}, ${gradientTo})` },
-        {
-          backgroundImage: `radial-gradient(1200px 200px at 50% -20%, ${gradientFrom}, ${gradientTo})`,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
+      
+      if (!isNavigating) {
+        gsap.fromTo(
+          section,
+          { backgroundImage: `radial-gradient(1200px 200px at 50% 120%, ${gradientFrom}, ${gradientTo})` },
+          {
+            backgroundImage: `radial-gradient(1200px 200px at 50% -20%, ${gradientFrom}, ${gradientTo})`,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
           },
-        },
-      )
+        )
+      }
     })
   }
 
@@ -220,7 +287,7 @@ export default function HomePage() {
 
       {/* Main content - always renders */}
 
-      <main className="min-h-screen">
+      <main className="min-h-screen" data-page="home">
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
           <SectionWaveTransition colorScheme="blue" direction="up" intensity="light" />
@@ -239,14 +306,14 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
-              {portfolioData?.user.name || "R.a.mon Tiwari"}
+              {portfolioData?.user.name || "R.a.mohan Tiwari"}
             </h1>
 
             <p className="text-xl md:text-2xl text-accent font-semibold mb-4">a developer</p>
 
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               {portfolioData?.user.bio ||
-                "Crafting exceptional digital experiences with modern web technologies — React, TypeScript, and beyond."}
+                "Crafting exceptional digital experiences with modern web technologies - React, TypeScript, and beyond."}
             </p>
 
             <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-12">
@@ -329,7 +396,7 @@ export default function HomePage() {
               <div className="lg:col-span-1">
                 <VideoProjectCard
                   title="aaja-ta-suree"
-                  description="Modern To-Do app built with React, TypeScript & Zod — simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali"
+                  description="Modern To-Do app built with React, TypeScript & Zod - simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali"
                   topics={["react", "typescript", "zod", "todo", "authentication", "tailwind"]}
                   language="TypeScript"
                   stars={0}

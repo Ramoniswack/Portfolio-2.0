@@ -2,6 +2,7 @@
 import Link from "next/link"
 import { CustomCursor } from "@/components/CustomCursor"
 import { SectionWaveTransition } from "@/components/SectionWaveTransition"
+import { BlogPageClient } from "@/components/BlogPageClient"
 import fs from "node:fs"
 import path from "node:path"
 import matter from "gray-matter"
@@ -56,9 +57,9 @@ export default async function BlogsPage() {
   const posts = await getPosts()
 
   return (
-    <>
+    <BlogPageClient>
       <CustomCursor />
-      <main className="min-h-screen px-6 py-24 bg-background text-foreground">
+      <main className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="blogs">
         <div className="max-w-6xl mx-auto relative overflow-hidden">
           <SectionWaveTransition colorScheme="emerald" direction="up" intensity="light" />
           
@@ -192,7 +193,7 @@ export default async function BlogsPage() {
           </section>
         </div>
       </main>
-    </>
+    </BlogPageClient>
   )
 }
 
