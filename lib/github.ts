@@ -94,10 +94,10 @@ export async function fetchGitHubData(): Promise<PortfolioData> {
     // Enhanced fallback data with real projects
     return {
       user: {
-        name: "R.a.mon Tiwari",
+        name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "/developer-avatar.png",
-        bio: "Exploring the modern web stack — React, TypeScript, Zod, and beyond.",
+        bio: "Exploring the modern web stack - React, TypeScript, Zod, and beyond.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",

@@ -7,7 +7,7 @@ export const downloadResume = () => {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>R.a.mon Tiwari - Resume</title>
+    <title>R.a.mohan Tiwari - Resume</title>
     <style>
         @page {
             size: A4;
@@ -176,7 +176,7 @@ export const downloadResume = () => {
 </head>
 <body>
     <div class="header">
-        <h1>R.a.mon Tiwari</h1>
+        <h1>R.a.mohan Tiwari</h1>
         <div class="contact-info">
             <p>ramontiwari086@gmail.com | Pokhara, Nepal</p>
             <p>https://ramohan.com.np | https://github.com/Ramoniswack | https://linkedin.com/in/ramon-tiwari</p>
@@ -185,7 +185,7 @@ export const downloadResume = () => {
 
     <div class="section">
         <h2>About Me</h2>
-        <p class="about-text">Developer & Creator who loves learning new things and enjoys juggling code, ideas, and music. Passionate about deep focus and curiosity, always exploring the intersection of technology and creativity. I write — syntax and lyrics alike, finding rhythm in both code and music, creating harmony between logic and art.</p>
+        <p class="about-text">Developer & Creator who loves learning new things and enjoys juggling code, ideas, and music. Passionate about deep focus and curiosity, always exploring the intersection of technology and creativity. I write syntax and lyrics alike, finding rhythm in both code and music, creating harmony between logic and art.</p>
     </div>
 
     <div class="section">

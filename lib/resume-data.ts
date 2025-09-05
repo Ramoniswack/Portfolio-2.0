@@ -1,6 +1,6 @@
 export const resumeData = {
   personalInfo: {
-    name: "R.a.mon Tiwari",
+    name: "R.a.mohan Tiwari",
     email: "ramontiwari086@gmail.com",
     phone: "+977-XXXXXXXXX", // Add your phone number
     location: "Pokhara, Nepal",
@@ -8,7 +8,7 @@ export const resumeData = {
     github: "https://github.com/Ramoniswack"
   },
   
-  about: "Developer & Creator who loves learning new things and enjoys juggling code, ideas, and music. Passionate about deep focus and curiosity, always exploring the intersection of technology and creativity. I write — syntax and lyrics alike, finding rhythm in both code and music, creating harmony between logic and art.",
+  about: "Developer & Creator who loves learning new things and enjoys juggling code, ideas, and music. Passionate about deep focus and curiosity, always exploring the intersection of technology and creativity. I write syntax and lyrics alike, finding rhythm in both code and music, creating harmony between logic and art.",
   
   education: [
     {
@@ -66,12 +66,8 @@ export const resumeData = {
     "Critical Thinking", 
     "Team Collaboration",
     "Communication",
-    "Adaptability",
-    "Time Management",
-    "Creativity",
     "Self-Learning",
-    "Attention to Detail",
-    "Project Management"
+    "Attention to Detail"
   ],
   
   projects: [
@@ -98,7 +94,7 @@ export const resumeData = {
     },
     {
       name: "aaja-ta-suree",
-      description: "Modern To-Do app built with React, TypeScript & Zod — simple, type-safe, responsive",
+      description: "Modern To-Do app built with React, TypeScript & Zod - simple, type-safe, responsive",
       technologies: ["React", "TypeScript", "Zod"],
       github: "https://github.com/Ramoniswack/aaja-ta-suree",
       live: "https://aajatasure.vercel.app"

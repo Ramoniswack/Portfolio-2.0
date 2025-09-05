@@ -29,7 +29,7 @@ sites
 
 My details (fetch automatically)
 - GitHub: https://github.com/Ramoniswack
-- Name: R.a.mon Tiwari
+- Name: R.a.mohan Tiwari
 - Role: Full-stack Developer
 - Location: Pokhara, Nepal
 - Tagline: "Exploring the modern web stack — React, TypeScript, Zod, and beyond."
