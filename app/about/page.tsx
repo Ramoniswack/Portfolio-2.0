@@ -6,7 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Image from "next/image"
 import { CustomCursor } from "@/components/CustomCursor"
 import { SectionWaveTransition } from "@/components/SectionWaveTransition"
+import { useCompilation } from "@/components/CompilationProvider"
 import { downloadResume } from "@/lib/simple-resume-download"
+import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
 
 // Define the types locally since we're no longer using GitHub API
 interface User {
@@ -30,6 +32,7 @@ interface PortfolioData {
 export default function AboutPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null)
+  const { completePageLoad, isPageLoading, isNavigating } = useCompilation()
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -37,10 +40,10 @@ export default function AboutPage() {
     // Set static portfolio data - updated with correct GitHub information
     setPortfolioData({
       user: {
-        name: "R.a.mon Tiwari",
+        name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Exploring the modern web stack — React, TypeScript, Zod, and beyond.",
+        bio: "Exploring the modern web stack - React, TypeScript, Zod, and beyond.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -55,42 +58,113 @@ export default function AboutPage() {
   useEffect(() => {
     if (!rootRef.current) return
     
-    gsap.registerPlugin(ScrollTrigger)
+    console.log(`📋 About page useEffect triggered, isNavigating: ${isNavigating}`)
     
-    const elements = rootRef.current.querySelectorAll("[data-reveal]")
-    
-    gsap.fromTo(
-      elements,
-      { 
-        opacity: 0, 
-        y: 30,
-        scale: 0.95
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: rootRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
+    // More aggressive waiting for page readiness
+    const waitForPageReady = () => {
+      if (!rootRef.current) return
+      
+      // Check multiple criteria for page readiness
+      const elements = rootRef.current.querySelectorAll("[data-reveal]")
+      const isDocumentComplete = document.readyState === 'complete'
+      const hasCorrectContent = document.querySelector('[data-page="about"]') !== null
+      const hasExpectedElements = elements.length > 0
+      const hasCorrectURL = window.location.pathname.includes('/about')
+      const isPageVisible = rootRef.current.offsetHeight > 0
+      
+      const isContentReady = isDocumentComplete && 
+                           hasCorrectContent && 
+                           hasExpectedElements && 
+                           hasCorrectURL &&
+                           isPageVisible
+      
+      console.log(`🔍 About page readiness check:`, {
+        isDocumentComplete,
+        hasCorrectContent,
+        hasExpectedElements: `${elements.length} elements`,
+        hasCorrectURL,
+        isPageVisible,
+        isContentReady,
+        readyState: document.readyState,
+        currentURL: window.location.pathname
+      })
+      
+      if (!isContentReady) {
+        // Check again after a delay
+        setTimeout(waitForPageReady, 200)
+        return
       }
-    )
+      
+      // Content is ready, set up animations
+      console.log(`🎨 Setting up GSAP animations for About page`)
+      gsap.registerPlugin(ScrollTrigger)
+      
+      // Create scroll animation using the utility function
+      createScrollAnimation(
+        elements,
+        {
+          from: { 
+            opacity: 0, 
+            y: 30,
+            scale: 0.95
+          },
+          to: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+          },
+          scrollTrigger: {
+            trigger: rootRef.current,
+            start: "top 80%",
+            end: "bottom 20%",
+          }
+        },
+        isNavigating
+      )
 
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill())
+      // Wait even longer before completing to ensure everything is stable
+      console.log(`⏳ About page waiting for stability before completing...`)
+      setTimeout(() => {
+        // Final verification that page is still correct
+        const finalCheck = document.querySelector('[data-page="about"]') !== null &&
+                          window.location.pathname.includes('/about') &&
+                          document.readyState === 'complete'
+        
+        if (finalCheck) {
+          console.log(`🏁 About page completing load after full verification`)
+          completePageLoad()
+        } else {
+          console.log(`⚠️ About page final check failed, retrying...`)
+          setTimeout(waitForPageReady, 500)
+        }
+      }, 800) // Wait 800ms for stability
     }
-  }, [portfolioData])
+    
+    // Start checking after a longer initial delay
+    setTimeout(() => {
+      waitForPageReady()
+    }, 300)
+
+    // Cleanup function to kill all ScrollTriggers and animations
+    return () => {
+      // Kill all ScrollTriggers
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      
+      // Kill any running animations on elements with data-reveal
+      if (rootRef.current) {
+        const elements = rootRef.current.querySelectorAll("[data-reveal]")
+        gsap.killTweensOf(elements)
+      }
+    }
+  }, [completePageLoad, isNavigating])
 
   return (
     <>
       <CustomCursor />
-      <main ref={rootRef} className="min-h-screen px-6 py-24 bg-background text-foreground">
+      <main ref={rootRef} className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="about">
         {/* Hero Section */}
         <section className="max-w-4xl mx-auto text-center mb-20 relative overflow-hidden">
         <SectionWaveTransition colorScheme="orange" direction="up" intensity="light" />
@@ -107,11 +181,11 @@ export default function AboutPage() {
         </div>
 
         <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 text-foreground" data-reveal>About Me
-          {/* About {portfolioData?.user.name || "R.a.mon Tiwari"} */}
+          {/* About {portfolioData?.user.name || "R.a.mohan Tiwari"} */}
         </h1>
         
         <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed" data-reveal>
-          {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Exploring the modern web stack — React, TypeScript, Zod, and beyond."}
+          {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Exploring the modern web stack - React, TypeScript, Zod, and beyond."}
         </p>
 
         {/* Social Links */}
@@ -180,7 +254,7 @@ export default function AboutPage() {
             </p>
             <h2 className="text-2xl font-bold mb-6 text-foreground">Writer & Musician</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I write — syntax and lyrics alike. My fingers switch between keyboard and guitar strings, finding rhythm in both 
+              I write syntax and lyrics alike. My fingers switch between keyboard and guitar strings, finding rhythm in both 
               code and music, creating harmony between logic and art.
             </p>
           </div>
@@ -239,12 +313,12 @@ export default function AboutPage() {
       </section>
 
       {/* Tech Stack Section */}
-      <section className="max-w-6xl mx-auto relative overflow-hidden">
+      <section className="max-w-6xl mx-auto relative overflow-hidden mb-16 z-10">
         <SectionWaveTransition colorScheme="blue" direction="down" intensity="medium" />
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
           Tech Stack
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6" data-reveal>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 px-4 pb-8 relative z-20" data-reveal>
           {[
             { name: "HTML5", icon: "/icons/html-5.png" },
             { name: "CSS3", icon: "/icons/css-3.png" },
@@ -262,10 +336,36 @@ export default function AboutPage() {
           ].map((tech, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center bg-card border border-border rounded-xl p-4 hover:border-accent/50 transition-all duration-300 hover:scale-105 hover:shadow-lg group min-h-[100px]"
+              className="relative flex flex-col items-center justify-center bg-card/95 backdrop-blur-sm rounded-xl p-4 min-h-[100px] group overflow-visible z-10"
               data-pointer="interactive"
+              style={{
+                border: '2px solid transparent',
+                backgroundClip: 'padding-box',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+              onMouseEnter={(e) => {
+                const element = e.currentTarget
+                element.style.border = '2px solid hsl(var(--accent) / 0.5)'
+                element.style.transform = 'scale(1.05)'
+                element.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
+              onMouseLeave={(e) => {
+                const element = e.currentTarget
+                element.style.border = '2px solid hsl(var(--border))'
+                element.style.transform = 'scale(1)'
+                element.style.boxShadow = 'none'
+              }}
             >
-              <div className="flex items-center justify-center w-12 h-12 mb-3">
+              {/* Background border always visible */}
+              <div 
+                className="absolute inset-0 rounded-xl" 
+                style={{
+                  border: '2px solid hsl(var(--border))',
+                  transition: 'border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              />
+              
+              <div className="flex items-center justify-center w-12 h-12 mb-3 relative z-10">
                 <Image
                   src={tech.icon}
                   alt={tech.name}
@@ -276,24 +376,24 @@ export default function AboutPage() {
                   quality={75}
                 />
               </div>
-              <span className="text-foreground font-medium text-sm text-center leading-tight">{tech.name}</span>
+              <span className="text-foreground font-medium text-sm text-center leading-tight relative z-10">{tech.name}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* Social Links Section */}
-      <section className="max-w-6xl mx-auto mt-20 relative overflow-hidden">
+      <section className="max-w-6xl mx-auto mt-12 mb-16 relative overflow-visible z-10">
         <SectionWaveTransition colorScheme="emerald" direction="up" intensity="light" />
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
           Connect With Me
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-2xl mx-auto" data-reveal>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4 pb-8 relative z-20" data-reveal>
           <a
             href="https://github.com/Ramoniswack"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col items-center p-4 md:p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="group flex flex-col items-center p-3 sm:p-4 md:p-6 bg-card/95 backdrop-blur-sm border-2 border-border rounded-xl hover:border-accent hover:bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent/25 relative z-30 overflow-visible"
             data-pointer="interactive"
           >
             <div className="mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-200">
@@ -301,12 +401,12 @@ export default function AboutPage() {
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
               </svg>
             </div>
-            <span className="text-foreground font-medium text-xs md:text-sm text-center">GitHub</span>
+            <span className="text-foreground font-medium text-xs sm:text-sm md:text-sm text-center leading-tight">GitHub</span>
           </a>
 
           <a
             href="mailto:ramontiwari086@gmail.com"
-            className="group flex flex-col items-center p-4 md:p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="group flex flex-col items-center p-3 sm:p-4 md:p-6 bg-card/95 backdrop-blur-sm border-2 border-border rounded-xl hover:border-accent hover:bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent/25 relative z-30 overflow-visible"
             data-pointer="interactive"
           >
             <div className="mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-200">
@@ -315,14 +415,14 @@ export default function AboutPage() {
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
             </div>
-            <span className="text-foreground font-medium text-xs md:text-sm text-center">Email</span>
+            <span className="text-foreground font-medium text-xs sm:text-sm md:text-sm text-center leading-tight">Email</span>
           </a>
 
           <a
             href="https://ramohan.com.np"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col items-center p-4 md:p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="group flex flex-col items-center p-3 sm:p-4 md:p-6 bg-card/95 backdrop-blur-sm border-2 border-border rounded-xl hover:border-accent hover:bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent/25 relative z-30 overflow-visible"
             data-pointer="interactive"
           >
             <div className="mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-200">
@@ -331,14 +431,14 @@ export default function AboutPage() {
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
               </svg>
             </div>
-            <span className="text-foreground font-medium text-xs md:text-sm text-center">Website</span>
+            <span className="text-foreground font-medium text-xs sm:text-sm md:text-sm text-center leading-tight">Website</span>
           </a>
 
           <a
             href="https://linkedin.com/in/ramon-tiwari"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col items-center p-4 md:p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="group flex flex-col items-center p-3 sm:p-4 md:p-6 bg-card/95 backdrop-blur-sm border-2 border-border rounded-xl hover:border-accent hover:bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent/25 relative z-30 overflow-visible"
             data-pointer="interactive"
           >
             <div className="mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-200">
@@ -346,13 +446,13 @@ export default function AboutPage() {
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
               </svg>
             </div>
-            <span className="text-foreground font-medium text-xs md:text-sm text-center">LinkedIn</span>
+            <span className="text-foreground font-medium text-xs sm:text-sm md:text-sm text-center leading-tight">LinkedIn</span>
           </a>
         </div>
       </section>
 
       {/* Download Resume Section */}
-      <section className="max-w-6xl mx-auto mb-20 text-center relative overflow-hidden">
+      <section className="max-w-6xl mx-auto mb-20 text-center relative overflow-hidden z-5 pt-4">
         <SectionWaveTransition colorScheme="emerald" direction="up" intensity="medium" />
         <h2 className="text-4xl md:text-5xl font-heading font-bold mb-8 text-foreground" data-reveal>
           Resume
