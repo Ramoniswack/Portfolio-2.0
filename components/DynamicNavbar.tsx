@@ -205,7 +205,7 @@ export function DynamicNavbar() {
             <div className="flex">
               <button
                 ref={cvButtonRef}
-                className="px-3 py-1.5 md:px-4 lg:px-6 md:py-2 lg:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-xs lg:text-sm font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/25"
+                className="px-3 py-1.5 md:px-4 lg:px-6 md:py-2 lg:py-2.5 bg-accent text-accent-foreground rounded-full text-xs lg:text-sm font-medium hover:bg-accent/90 transition-all duration-300 hover:scale-105 shadow-lg"
                 data-pointer="interactive"
                 onClick={downloadResume}
               >

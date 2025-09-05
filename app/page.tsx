@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { CustomCursor } from "@/components/CustomCursor"
-import { SimplePreloader } from "@/components/SimplePreloader"
 import { SectionWaveTransition } from "@/components/SectionWaveTransition"
 import { usePreloader } from "@/components/PreloaderProvider"
 import { useCompilation } from "@/components/CompilationProvider"
@@ -260,12 +259,6 @@ export default function HomePage() {
     })
   }
 
-  const handlePreloaderComplete = useCallback(() => {
-    setPreloaderComplete()
-    // Enable scrolling immediately
-    document.body.style.overflow = "auto"
-  }, [setPreloaderComplete])
-
   // Prevent scrolling during loading
   useEffect(() => {
     if (shouldShowPreloader) {
@@ -277,14 +270,6 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Preloader overlay - only shows on page refresh */}
-      {shouldShowPreloader && (
-        <>
-          <CustomCursor />
-          <SimplePreloader onComplete={handlePreloaderComplete} />
-        </>
-      )}
-
       {/* Main content - always renders */}
 
       <main className="min-h-screen" data-page="home">

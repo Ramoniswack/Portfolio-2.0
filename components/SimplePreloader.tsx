@@ -26,9 +26,8 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
     if (hasCompletedRef.current) return
     hasCompletedRef.current = true
     
-    console.log("🎬 Starting wave transition - all pages preloaded!")
+    console.log("Starting wave transition - all content preloaded!")
     if (containerRef.current) {
-      // First, animate the waves upward
       gsap.to(".wave", {
         y: -window.innerHeight,
         duration: 1.2,
@@ -36,14 +35,13 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
         stagger: 0.1
       })
       
-      // Then fade out the entire preloader
       gsap.to(containerRef.current, {
         opacity: 0,
         duration: 0.8,
         delay: 0.6,
         ease: "power2.out",
         onComplete: () => {
-          console.log("✅ Preloader complete! Navigation should now be instant.")
+          console.log("Preloader complete!")
           onComplete()
         }
       })
@@ -52,25 +50,19 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
     }
   }, [onComplete])
 
-  // Complete preloader only when BOTH greetings and page preloading are done
   useEffect(() => {
     if (greetingsComplete && allPagesReady) {
-      console.log("🚀 Both greetings and page preloading complete!")
       setTimeout(() => {
         completePreloader()
-      }, 300)
+      }, 500)
     }
   }, [greetingsComplete, allPagesReady, completePreloader])
 
   useEffect(() => {
-    console.log("🎭 SimplePreloader started with page preloading!")
-    console.log("Starting greeting animation with", greetings.length, "greetings")
-
     intervalRef.current = setInterval(() => {
       setCurrentIndex(prev => {
         const next = prev + 1
         if (next >= greetings.length) {
-          console.log("📝 All greetings completed!")
           setGreetingsComplete(true)
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
@@ -78,13 +70,11 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
           }
           return prev
         }
-        console.log(`Showing greeting ${next + 1}/${greetings.length}: ${greetings[next]}`)
         return next
       })
-    }, 250) // Slightly slower to allow more time for preloading
+    }, 400)
 
     return () => {
-      console.log("Cleaning up preloader...")
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
@@ -94,13 +84,9 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
 
   return (
     <div ref={containerRef} className="preloader">
-      {/* Page preloader - runs in background during greetings */}
       <PagePreloader 
         isActive={true}
-        onAllPagesReady={() => {
-          console.log("📚 All pages preloaded!")
-          setAllPagesReady(true)
-        }}
+        onAllPagesReady={() => setAllPagesReady(true)}
       />
       
       <div className="absolute inset-0 overflow-hidden">
@@ -120,13 +106,8 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
           <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
         </div>
         
-        {/* Progress indicator */}
         <div className="text-sm text-blue-500/70 mt-4">
-          {allPagesReady ? (
-            greetingsComplete ? "Ready!" : "Pages loaded, finishing greetings..."
-          ) : (
-            "Loading pages..."
-          )}
+          {allPagesReady && greetingsComplete ? "Ready!" : "Loading pages..."}
         </div>
       </div>
     </div>

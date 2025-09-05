@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { SimplePreloader } from './SimplePreloader'
 
 interface PreloaderContextType {
   shouldShowPreloader: boolean
@@ -32,7 +33,7 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
       // Show preloader only on page refresh OR very first session start
       if (isPageRefresh || !hasEverStartedSession) {
         setShouldShowPreloader(true)
-        console.log('✅ Showing preloader')
+        console.log('✅ Showing preloader with page preloading')
       } else {
         console.log('❌ Not showing preloader (internal navigation)')
       }
@@ -46,11 +47,27 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
   }, [hasChecked])
 
   const setPreloaderComplete = () => {
+    console.log('🎬 Preloader marked as complete, hiding...')
     setShouldShowPreloader(false)
+    // Enable scrolling when preloader completes
+    document.body.style.overflow = "auto"
   }
+
+  // Prevent scrolling during preloader
+  useEffect(() => {
+    if (shouldShowPreloader) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+  }, [shouldShowPreloader])
 
   return (
     <PreloaderContext.Provider value={{ shouldShowPreloader, setPreloaderComplete }}>
+      {/* Render the SimplePreloader when needed */}
+      {shouldShowPreloader && (
+        <SimplePreloader onComplete={setPreloaderComplete} />
+      )}
       {children}
     </PreloaderContext.Provider>
   )

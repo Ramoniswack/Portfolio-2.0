@@ -23,88 +23,105 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
   useEffect(() => {
     if (!isActive || hasPreloadedRef.current) return
 
-    console.log('🚀 Starting advanced page preloading during greeting phase...')
+    console.log('🚀 Starting AGGRESSIVE page preloading to force Next.js compilation...')
     hasPreloadedRef.current = true
 
-    const preloadPage = async (pageInfo: { url: string, name: string }): Promise<void> => {
+    const aggressivelyPreloadPage = async (pageInfo: { url: string, name: string }): Promise<void> => {
       const { url, name } = pageInfo
       
       return new Promise((resolve) => {
-        console.log(`📥 Preloading ${name}: ${url}`)
+        console.log(`� AGGRESSIVELY preloading ${name}: ${url}`)
         
-        // 1. Use Next.js router prefetch (most important)
+        // 1. Next.js router prefetch
         router.prefetch(url)
         
-        // 2. Fetch the page content to warm up the cache
-        fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Cache-Control': 'max-age=3600'
+        // 2. Create hidden iframe to FORCE actual page load and compilation
+        const iframe = document.createElement('iframe')
+        iframe.style.cssText = `
+          position: absolute !important;
+          left: -9999px !important;
+          top: -9999px !important;
+          width: 1px !important;
+          height: 1px !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          z-index: -9999 !important;
+        `
+        iframe.setAttribute('aria-hidden', 'true')
+        iframe.setAttribute('tabindex', '-1')
+        
+        const timeoutId = setTimeout(() => {
+          console.log(`⏰ Timeout reached for ${name}, considering it preloaded`)
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe)
           }
-        })
-        .then(response => {
-          if (response.ok) {
-            console.log(`✅ Successfully preloaded ${name}`)
-            pagePreloadManager.markPagePreloaded(url)
-          } else {
-            console.log(`⚠️ ${name} preload got status ${response.status}`)
-          }
-        })
-        .catch(error => {
-          console.log(`❌ Failed to preload ${name}:`, error)
-        })
-        .finally(() => {
+          pagePreloadManager.markPagePreloaded(url)
           resolve()
-        })
+        }, 15000) // 15 second timeout
+        
+        iframe.onload = () => {
+          console.log(`✅ SUCCESSFULLY force-loaded ${name} - Next.js should have compiled it!`)
+          clearTimeout(timeoutId)
+          pagePreloadManager.markPagePreloaded(url)
+          
+          // Keep iframe for a bit longer to ensure full compilation
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe)
+            }
+          }, 2000)
+          
+          resolve()
+        }
+        
+        iframe.onerror = () => {
+          console.log(`❌ Failed to force-load ${name}, but marking as attempted`)
+          clearTimeout(timeoutId)
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe)
+          }
+          pagePreloadManager.markPagePreloaded(url) // Mark anyway to prevent blocking
+          resolve()
+        }
+        
+        // Add to DOM and set source to trigger load
+        document.body.appendChild(iframe)
+        iframe.src = url
+        
+        console.log(`📡 Created hidden iframe for ${name} to force Next.js compilation`)
       })
     }
 
-    const preloadResources = async () => {
-      console.log(`📚 Preloading ${pagesToPreload.length} pages and resources...`)
+    const preloadEverything = async () => {
+      console.log(`🏗️ Starting COMPLETE preload of ${pagesToPreload.length} pages...`)
       
-      // 1. Preload critical resources first
-      const criticalResources = [
-        '/favicon.ico',
-        '/android-chrome-512x512.png',
-      ]
-
-      // Preload critical resources
-      criticalResources.forEach(resource => {
-        const link = document.createElement('link')
-        link.rel = 'preload'
-        link.href = resource
-        link.as = resource.endsWith('.css') ? 'style' : 'image'
-        document.head.appendChild(link)
-      })
-
-      // 2. Preload pages concurrently for speed
-      const preloadPromises = pagesToPreload.map(pageInfo => preloadPage(pageInfo))
-      
-      try {
-        await Promise.all(preloadPromises)
-        console.log(`🎉 All ${pagesToPreload.length} pages preloaded successfully!`)
+      // Preload pages one by one with delays to avoid overwhelming Next.js
+      for (const pageInfo of pagesToPreload) {
+        await aggressivelyPreloadPage(pageInfo)
         
-        // Mark all pages as preloaded in the global manager
-        pagePreloadManager.markAllPagesPreloaded()
-        
-      } catch (error) {
-        console.log(`⚠️ Some pages failed to preload, but continuing...`, error)
+        // Small delay between preloads to let Next.js process
+        await new Promise(resolve => setTimeout(resolve, 1000))
       }
       
-      // 3. Notify completion
+      console.log(`🎉 AGGRESSIVE preloading complete! All pages should be compiled.`)
+      
+      // Mark all pages as preloaded
+      pagePreloadManager.markAllPagesPreloaded()
+      
+      // Final delay to ensure everything is settled
       setTimeout(() => {
-        console.log(`🔥 Page preloading complete - navigation should be instant!`)
+        console.log(`� Page preloading DEFINITELY complete - navigation should be instant!`)
         onAllPagesReady()
-      }, 100)
+      }, 2000)
     }
 
-    // Start preloading immediately
-    preloadResources()
+    // Start aggressive preloading immediately 
+    preloadEverything()
 
   }, [isActive, router, onAllPagesReady])
 
-  // Hidden prefetch links as backup (Next.js best practice)
+  // Hidden prefetch links as additional backup
   return (
     <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
       {pagesToPreload.map((page) => (
