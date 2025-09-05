@@ -13,6 +13,7 @@ interface CompilationContextType {
   setCurrentPageName: (name: string) => void
   startPageLoad: (pageName: string) => void
   completePageLoad: () => void
+  cancelLoading: () => void
   isNavigating: boolean
 }
 
@@ -23,6 +24,7 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
   const [isPageLoading, setIsPageLoading] = useState(false)
   const [currentPageName, setCurrentPageName] = useState("Work")
   const [showContentMismatch, setShowContentMismatch] = useState(false)
+  const [pagesPreloaded, setPagesPreloaded] = useState(false)
   const pathname = usePathname()
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const manualLoadingRef = useRef(false)
@@ -32,6 +34,12 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     if (path.startsWith('/about')) return 'About'
     if (path.startsWith('/blogs')) return 'Blog'
     return 'Work'
+  }
+
+  // Check if this is a preloaded page (should navigate instantly)
+  const isPreloadedPage = (path: string) => {
+    const preloadedPages = ['/', '/about', '/blogs']
+    return preloadedPages.includes(path) || preloadedPages.some(p => path.startsWith(p))
   }
 
   // Use router events to detect actual navigation
@@ -53,11 +61,17 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       // Clear content mismatch when route completes properly
       setShowContentMismatch(false)
       
-      // For manually managed routes, NEVER auto-complete via router events
-      // ONLY let the page components complete via completePageLoad()
+      // For manually managed routes, ONLY complete if the page components haven't called completePageLoad yet
       if (manualLoadingRef.current) {
-        console.log(`✋ Ignoring router completion for manual route: ${url}`)
-        return // Do nothing, let page component handle it
+        console.log(`⏳ Manual route detected completion but waiting for page component: ${url}`)
+        // Set a backup timeout in case page component never calls completePageLoad
+        setTimeout(() => {
+          if (manualLoadingRef.current && isPageLoading) {
+            console.log(`⏰ Backup timeout: Auto-completing stuck manual route: ${url}`)
+            completePageLoad()
+          }
+        }, 10000) // 10 second backup timeout
+        return
       }
       
       // Only auto-complete for non-manually managed routes
@@ -97,16 +111,16 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       clearTimeout(fallbackTimeoutRef.current)
     }
     
-    // Much longer fallback timeout for Next.js compilation (up to 30 seconds)
+    // Much longer fallback timeout for Next.js compilation (up to 2 minutes)
     fallbackTimeoutRef.current = setTimeout(() => {
-      console.log(`⏰ Fallback timeout reached for ${pageName}`)
+      console.log(`⏰ Fallback timeout reached for ${pageName} after 2 minutes`)
       setIsPageLoading(false)
       setIsCompiling(false)
       manualLoadingRef.current = false
       scrollTriggerManager.setNavigating(false)
       // Update to current pathname
       setCurrentPageName(getPageName(pathname))
-    }, 30000) // 30 second fallback for very slow loads
+    }, 120000) // 2 minute fallback for very slow loads
   }
 
   const completePageLoad = () => {
@@ -134,6 +148,30 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     }, 150)
   }
 
+    const cancelLoading = () => {
+    console.log(`❌ Dismissing loading indicator for: ${currentPageName}`)
+    
+    // Clear any fallback timeout
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current)
+      fallbackTimeoutRef.current = null
+    }
+    
+    // ONLY dismiss the loading indicator, DO NOT revert navigation
+    setIsPageLoading(false)
+    setIsCompiling(false)
+    setShowContentMismatch(false)
+    manualLoadingRef.current = false
+    
+    // UN-FREEZE animations but keep the current navigation
+    scrollTriggerManager.setNavigating(false)
+    
+    // Update page name to match current pathname (where user navigated to)
+    setCurrentPageName(getPageName(pathname))
+    
+    // DO NOT reload or revert - user stays on the page they navigated to
+  }
+
   const setCompiling = (compiling: boolean) => {
     setIsCompiling(compiling)
     if (!compiling) {
@@ -150,18 +188,40 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       setCurrentPageName,
       startPageLoad,
       completePageLoad,
+      cancelLoading,
       isNavigating: isPageLoading || isCompiling
     }}>
       {children}
       
       {/* Small loading indicator in top-right corner instead of full-screen overlay */}
       {(isPageLoading || showContentMismatch) && (
-        <div className="fixed top-4 right-4 z-[10000] bg-background/90 backdrop-blur-md border border-border rounded-full px-4 py-2 shadow-lg">
+        <div className="fixed top-4 right-4 z-[10000] bg-background/90 backdrop-blur-md border border-border rounded-lg px-4 py-2 shadow-lg">
           <div className="flex items-center gap-3">
-            <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-            <span className="text-sm font-medium text-foreground">
-              Loading {currentPageName}...
-            </span>
+            <div className="flex items-center gap-2">
+              <div className={`w-4 h-4 border-2 border-t-transparent rounded-full animate-spin ${
+                showContentMismatch ? 'border-orange-500' : 'border-accent'
+              }`} />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-foreground">
+                  Loading {currentPageName}...
+                </span>
+                {showContentMismatch && (
+                  <span className="text-xs text-orange-600 dark:text-orange-400">
+                    Waiting for content...
+                  </span>
+                )}
+              </div>
+            </div>
+                        <button
+              onClick={cancelLoading}
+              className="p-1 hover:bg-muted rounded-sm transition-colors group ml-2"
+              title="Dismiss loading indicator (navigation will continue)"
+              aria-label="Dismiss loading indicator"
+            >
+              <svg className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
         </div>
       )}

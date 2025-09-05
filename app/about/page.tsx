@@ -60,93 +60,77 @@ export default function AboutPage() {
     
     console.log(`📋 About page useEffect triggered, isNavigating: ${isNavigating}`)
     
-    // More aggressive waiting for page readiness
-    const waitForPageReady = () => {
+    // Wait for ACTUAL Next.js compilation completion
+    const waitForNextJSCompilation = () => {
       if (!rootRef.current) return
       
-      // Check multiple criteria for page readiness
-      const elements = rootRef.current.querySelectorAll("[data-reveal]")
-      const isDocumentComplete = document.readyState === 'complete'
+      // Check if Next.js has actually compiled this page
       const hasCorrectContent = document.querySelector('[data-page="about"]') !== null
-      const hasExpectedElements = elements.length > 0
+      const isDocumentComplete = document.readyState === 'complete'
       const hasCorrectURL = window.location.pathname.includes('/about')
-      const isPageVisible = rootRef.current.offsetHeight > 0
+      const hasReactHydrated = document.querySelector('#__next') !== null || document.body.children.length > 0
+      const noLoadingSpinners = document.querySelectorAll('[class*="loading"], [class*="spinner"]').length <= 1 // Allow our own loading indicator
       
-      const isContentReady = isDocumentComplete && 
-                           hasCorrectContent && 
-                           hasExpectedElements && 
-                           hasCorrectURL &&
-                           isPageVisible
+      const isNextJSCompiled = hasCorrectContent && isDocumentComplete && hasCorrectURL && hasReactHydrated && noLoadingSpinners
       
-      console.log(`🔍 About page readiness check:`, {
-        isDocumentComplete,
+      console.log(`🔍 About page Next.js compilation check:`, {
         hasCorrectContent,
-        hasExpectedElements: `${elements.length} elements`,
+        isDocumentComplete,
         hasCorrectURL,
-        isPageVisible,
-        isContentReady,
-        readyState: document.readyState,
+        hasReactHydrated,
+        noLoadingSpinners,
+        isNextJSCompiled,
         currentURL: window.location.pathname
       })
       
-      if (!isContentReady) {
-        // Check again after a delay
-        setTimeout(waitForPageReady, 200)
-        return
-      }
-      
-      // Content is ready, set up animations
-      console.log(`🎨 Setting up GSAP animations for About page`)
-      gsap.registerPlugin(ScrollTrigger)
-      
-      // Create scroll animation using the utility function
-      createScrollAnimation(
-        elements,
-        {
-          from: { 
-            opacity: 0, 
-            y: 30,
-            scale: 0.95
-          },
-          to: {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "power2.out",
-          },
-          scrollTrigger: {
-            trigger: rootRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-          }
-        },
-        isNavigating
-      )
-
-      // Wait even longer before completing to ensure everything is stable
-      console.log(`⏳ About page waiting for stability before completing...`)
-      setTimeout(() => {
-        // Final verification that page is still correct
-        const finalCheck = document.querySelector('[data-page="about"]') !== null &&
-                          window.location.pathname.includes('/about') &&
-                          document.readyState === 'complete'
+      if (isNextJSCompiled) {
+        // Next.js compilation is complete, set up animations
+        console.log(`🎨 Setting up GSAP animations for About page - Next.js compilation confirmed`)
+        gsap.registerPlugin(ScrollTrigger)
         
-        if (finalCheck) {
-          console.log(`🏁 About page completing load after full verification`)
+        const elements = rootRef.current.querySelectorAll("[data-reveal]")
+        
+        // Create scroll animation using the utility function
+        createScrollAnimation(
+          elements,
+          {
+            from: { 
+              opacity: 0, 
+              y: 30,
+              scale: 0.95
+            },
+            to: {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              stagger: 0.1,
+              ease: "power2.out",
+            },
+            scrollTrigger: {
+              trigger: rootRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+            }
+          },
+          isNavigating
+        )
+
+        // Complete page load - this will remove the loading indicator
+        console.log(`🏁 About page completing load - Next.js compilation verified`)
+        setTimeout(() => {
           completePageLoad()
-        } else {
-          console.log(`⚠️ About page final check failed, retrying...`)
-          setTimeout(waitForPageReady, 500)
-        }
-      }, 800) // Wait 800ms for stability
+        }, 300)
+      } else {
+        // Keep waiting for Next.js compilation
+        setTimeout(waitForNextJSCompilation, 500)
+      }
     }
     
-    // Start checking after a longer initial delay
+    // Start checking after a delay to let Next.js start compilation
     setTimeout(() => {
-      waitForPageReady()
-    }, 300)
+      waitForNextJSCompilation()
+    }, 1000)
 
     // Cleanup function to kill all ScrollTriggers and animations
     return () => {

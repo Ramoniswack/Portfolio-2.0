@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { gsap } from "gsap"
+import { PagePreloader } from "./PagePreloader"
 
 const greetings = [
   "Hello", "Namaste", "こんにちは", "Hola", "مرحبا", 
@@ -16,6 +17,8 @@ interface SimplePreloaderProps {
 export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [allPagesReady, setAllPagesReady] = useState(false)
+  const [greetingsComplete, setGreetingsComplete] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const hasCompletedRef = useRef(false)
 
@@ -23,7 +26,7 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
     if (hasCompletedRef.current) return
     hasCompletedRef.current = true
     
-    console.log("Starting wave transition...")
+    console.log("🎬 Starting wave transition - all pages preloaded!")
     if (containerRef.current) {
       // First, animate the waves upward
       gsap.to(".wave", {
@@ -40,7 +43,7 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
         delay: 0.6,
         ease: "power2.out",
         onComplete: () => {
-          console.log("Preloader complete!")
+          console.log("✅ Preloader complete! Navigation should now be instant.")
           onComplete()
         }
       })
@@ -49,28 +52,36 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
     }
   }, [onComplete])
 
+  // Complete preloader only when BOTH greetings and page preloading are done
   useEffect(() => {
-    console.log("SimplePreloader started!")
+    if (greetingsComplete && allPagesReady) {
+      console.log("🚀 Both greetings and page preloading complete!")
+      setTimeout(() => {
+        completePreloader()
+      }, 300)
+    }
+  }, [greetingsComplete, allPagesReady, completePreloader])
+
+  useEffect(() => {
+    console.log("🎭 SimplePreloader started with page preloading!")
     console.log("Starting greeting animation with", greetings.length, "greetings")
 
     intervalRef.current = setInterval(() => {
       setCurrentIndex(prev => {
         const next = prev + 1
         if (next >= greetings.length) {
-          console.log("All greetings completed, finishing...")
+          console.log("📝 All greetings completed!")
+          setGreetingsComplete(true)
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
             intervalRef.current = null
           }
-          setTimeout(() => {
-            completePreloader()
-          }, 150)
           return prev
         }
         console.log(`Showing greeting ${next + 1}/${greetings.length}: ${greetings[next]}`)
         return next
       })
-    }, 200) // Much faster - 200ms instead of 400ms
+    }, 250) // Slightly slower to allow more time for preloading
 
     return () => {
       console.log("Cleaning up preloader...")
@@ -79,10 +90,19 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
         intervalRef.current = null
       }
     }
-  }, [completePreloader])
+  }, [])
 
   return (
     <div ref={containerRef} className="preloader">
+      {/* Page preloader - runs in background during greetings */}
+      <PagePreloader 
+        isActive={true}
+        onAllPagesReady={() => {
+          console.log("📚 All pages preloaded!")
+          setAllPagesReady(true)
+        }}
+      />
+      
       <div className="absolute inset-0 overflow-hidden">
         <div className="wave wave-1"></div>
         <div className="wave wave-2"></div>
@@ -98,6 +118,15 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
           <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
           <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></div>
           <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+        </div>
+        
+        {/* Progress indicator */}
+        <div className="text-sm text-blue-500/70 mt-4">
+          {allPagesReady ? (
+            greetingsComplete ? "Ready!" : "Pages loaded, finishing greetings..."
+          ) : (
+            "Loading pages..."
+          )}
         </div>
       </div>
     </div>

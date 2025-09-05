@@ -10,53 +10,60 @@ interface RouterEventsHook {
   onContentMismatch?: (expectedPath: string, actualContent: string) => void
 }
 
-// Simplified content matching to prevent flickering
+// Simplified content matching - ONLY check for Next.js compilation completion
 function checkIfPageContentMatches(path: string): boolean {
   const currentDataPage = document.querySelector('[data-page]')?.getAttribute('data-page')
   const currentUrl = window.location.pathname
+  const isDocumentComplete = document.readyState === 'complete'
   
-  console.log(`🔍 Simple content validation for ${path}:`, {
+  // Basic check - must have correct data-page, URL, and document complete
+  let expectedPage = 'work'
+  if (path.startsWith('/about')) expectedPage = 'about'
+  if (path.startsWith('/blogs')) expectedPage = 'blogs'
+  
+  const hasCorrectContent = currentDataPage === expectedPage && 
+                           currentUrl.includes(path) && 
+                           isDocumentComplete
+  
+  console.log(`� Next.js compilation check for ${path}:`, {
     currentDataPage,
+    expectedPage,
     currentUrl,
-    expectedPath: path
+    expectedPath: path,
+    isDocumentComplete,
+    hasCorrectContent
   })
   
-  // Simple validation - just check data-page attribute and URL
-  if (path.startsWith('/about')) {
-    const isValid = currentDataPage === 'about' && currentUrl.includes('/about')
-    console.log(`📋 About page validation: ${isValid}`)
-    return isValid
-  }
-  
-  if (path.startsWith('/blogs')) {
-    const isValid = currentDataPage === 'blogs' && currentUrl.includes('/blogs')
-    console.log(`📚 Blog page validation: ${isValid}`)
-    return isValid
-  }
-  
-  // Home page
-  const isValid = currentDataPage === 'home' && (currentUrl === '/' || currentUrl === '')
-  console.log(`🏠 Home page validation: ${isValid}`)
-  return isValid
+  return hasCorrectContent
 }
 
-// Check if the page is stable (no pending operations)
-function checkPageStability(path: string): boolean {
-  // Check if there are any pending font loads
-  const hasPendingFonts = document.fonts && document.fonts.status === 'loading'
-  
-  // Check if images are still loading
-  const images = Array.from(document.images)
-  const hasLoadingImages = images.some(img => !img.complete)
-  
-  console.log(`🔍 Page stability check:`, {
-    path,
-    hasPendingFonts,
-    hasLoadingImages,
-    isStable: !hasPendingFonts && !hasLoadingImages
-  })
-  
-  return !hasPendingFonts && !hasLoadingImages
+// Check if Next.js has finished compiling by looking for stable page structure
+function checkNextJSCompilationComplete(path: string): boolean {
+  try {
+    // Wait for Next.js to fully hydrate and compile
+    const hasReactHydrated = document.querySelector('[data-reactroot]') !== null || 
+                            document.querySelector('#__next') !== null ||
+                            document.body.children.length > 0
+    
+    const hasCorrectPageStructure = document.querySelector(`[data-page]`) !== null
+    const isFullyLoaded = document.readyState === 'complete'
+    const noLoadingSpinners = document.querySelectorAll('[class*="loading"], [class*="spinner"]').length === 0
+    
+    const isCompiled = hasReactHydrated && hasCorrectPageStructure && isFullyLoaded && noLoadingSpinners
+    
+    console.log(`🏗️ Next.js compilation status for ${path}:`, {
+      hasReactHydrated,
+      hasCorrectPageStructure,
+      isFullyLoaded,
+      noLoadingSpinners,
+      isCompiled
+    })
+    
+    return isCompiled
+  } catch (error) {
+    console.error('Error checking Next.js compilation:', error)
+    return false
+  }
 }
 
 export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, onContentMismatch }: RouterEventsHook) {
@@ -65,6 +72,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
   const isNavigatingRef = useRef(false)
   const routeStartTimeRef = useRef<number | null>(null)
   const compilationCompleteRef = useRef(false)
+  const maxAttemptsRef = useRef(0)
 
   useEffect(() => {
     // Detect route change start
@@ -72,52 +80,65 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
       isNavigatingRef.current = true
       compilationCompleteRef.current = false
       routeStartTimeRef.current = performance.now()
+      maxAttemptsRef.current = 0
       
       console.log(`🚀 Route navigation started: ${pathname}`)
       onRouteStart?.(pathname)
       
-      // Monitor for ACTUAL page completion by observing multiple signals with simplified validation
+      // Monitor for ACTUAL page completion with attempt limiting
       const checkRouteComplete = () => {
-        const isDocumentComplete = document.readyState === 'complete'
-        const hasCorrectContent = checkIfPageContentMatches(pathname)
-        const isPageStable = checkPageStability(pathname)
+        maxAttemptsRef.current++
         
-        console.log(`🔍 Route completion check (${pathname}):`, {
-          isDocumentComplete,
+        // Keep trying until we get the right content - NO FORCED COMPLETION
+        // Only stop if we've been trying for more than 60 seconds (120 attempts)
+        if (maxAttemptsRef.current > 120) {
+          console.log(`⚠️ Giving up after 60 seconds of attempts for ${pathname}`)
+          compilationCompleteRef.current = true
+          isNavigatingRef.current = false
+          onRouteComplete?.(pathname)
+          lastPathnameRef.current = pathname
+          return
+        }
+        
+        const hasCorrectContent = checkIfPageContentMatches(pathname)
+        const isNextJSCompiled = checkNextJSCompilationComplete(pathname)
+        
+        console.log(`🔍 Next.js compilation check ${maxAttemptsRef.current}/120 (${pathname}):`, {
           hasCorrectContent,
-          isPageStable,
+          isNextJSCompiled,
           readyState: document.readyState,
           compilationComplete: compilationCompleteRef.current
         })
         
-        if (isDocumentComplete && hasCorrectContent && isPageStable && !compilationCompleteRef.current) {
+        // ONLY complete when Next.js has actually finished compiling
+        if (hasCorrectContent && isNextJSCompiled && !compilationCompleteRef.current) {
           compilationCompleteRef.current = true
           isNavigatingRef.current = false
           
           const totalTime = routeStartTimeRef.current ? performance.now() - routeStartTimeRef.current : 0
-          console.log(`✅ Route navigation complete: ${pathname} (${totalTime.toFixed(2)}ms)`)
+          console.log(`✅ Next.js compilation complete: ${pathname} (${totalTime.toFixed(2)}ms)`)
           
           onRouteComplete?.(pathname)
           lastPathnameRef.current = pathname
           return
         }
         
-        // If content doesn't match after reasonable time, report mismatch
-        if (isDocumentComplete && !hasCorrectContent && routeStartTimeRef.current) {
+        // Report content mismatch but KEEP TRYING
+        if (hasCorrectContent && !isNextJSCompiled && routeStartTimeRef.current && maxAttemptsRef.current > 10) {
           const elapsedTime = performance.now() - routeStartTimeRef.current
-          if (elapsedTime > 1000) { // Reduced from 2000ms to 1000ms
-            console.warn(`⚠️  Content mismatch detected after ${elapsedTime.toFixed(2)}ms`)
+          if (maxAttemptsRef.current % 10 === 0) { // Only log every 10th attempt to reduce spam
+            console.warn(`⚠️ Content present but Next.js still compiling after ${elapsedTime.toFixed(2)}ms (attempt ${maxAttemptsRef.current}) - CONTINUING...`)
             const actualContent = document.querySelector('[data-page]')?.getAttribute('data-page') || 'unknown'
             onContentMismatch?.(pathname, actualContent)
           }
         }
         
-        // Continue checking - reduced frequency to prevent flickering
-        setTimeout(checkRouteComplete, 500) // Increased from 100ms to 500ms
+        // ALWAYS continue checking until correct content loads
+        setTimeout(checkRouteComplete, 500) // 500ms intervals
       }
       
-      // Start monitoring immediately but with initial delay
-      setTimeout(checkRouteComplete, 1000) // Reduced from 2000ms to 1000ms
+      // Start monitoring with initial delay
+      setTimeout(checkRouteComplete, 1000)
     }
   }, [pathname, onRouteStart, onRouteComplete, onRouteError, onContentMismatch])
 
