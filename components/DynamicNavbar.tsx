@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { usePathname, useRouter } from "next/navigation"
 import { useNavigation } from "./NavigationProvider"
 import { downloadResume } from "@/lib/simple-resume-download"
+import { useCompilation } from "./CompilationProvider"
 
 export function DynamicNavbar() {
   const navRef = useRef<HTMLDivElement>(null)
@@ -20,6 +21,7 @@ export function DynamicNavbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { navigateWithTransition } = useNavigation()
+  const { startPageLoad } = useCompilation()
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, Flip)
@@ -117,6 +119,16 @@ export function DynamicNavbar() {
   const handleNavClick = (section: string, href: string) => {
     setActive(section)
     
+    // Set the page name and start loading immediately when clicked
+    const pageNames: Record<string, string> = {
+      work: 'Work',
+      about: 'About', 
+      blogs: 'Blog'
+    }
+    
+    // Start loading indicator immediately with correct page name
+    startPageLoad(pageNames[section] || 'Work')
+    
     // Map sections to color schemes
     const colorSchemes: Record<string, string> = {
       work: 'blue',
@@ -139,7 +151,7 @@ export function DynamicNavbar() {
           <div className="flex md:hidden">
             <span className={`font-semibold text-lg transition-colors duration-200 ${
               hasBackground ? "text-white" : "text-slate-900"
-            }`}>R.a.mon</span>
+            }`}>R.a.mohan</span>
           </div>
 
           {/* Navigation Links - Always Visible */}

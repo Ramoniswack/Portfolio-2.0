@@ -26,13 +26,13 @@ export function NavigationProvider({ children }: NavigationProviderProps) {
     setIsTransitioning(true)
     setCurrentColorScheme(colorScheme as any)
 
-    // Faster navigation - start routing immediately with wave overlay
+    // Start routing immediately
     router.push(path)
     
-    // Shorter delay for better performance
+    // Complete transition after wave animation
     setTimeout(() => {
       setIsTransitioning(false)
-    }, 800) // Reduced from 1500ms to 800ms
+    }, 800)
   }, [router, isTransitioning])
 
   const handleTransitionComplete = useCallback(() => {
