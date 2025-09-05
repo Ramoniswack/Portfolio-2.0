@@ -31,7 +31,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "R.a.mohan Tiwari - Full-Stack Developer & Creator",
+    default: "R.a.mohan Tiwari- a developer",
     template: "%s | R.a.mohan Tiwari"
   },
   description: "Full-Stack Developer & Creator exploring modern web technologies. React, TypeScript, Node.js specialist. Web Development Intern at Xav Technologies. Developer, Writer & Musician.",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://ramohan.com.np',
-    title: 'R.a.mohan Tiwari - Full-Stack Developer & Creator',
+    title: 'R.a.mohan Tiwari- a developer',
     description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
     siteName: 'R.a.mohan Tiwari Portfolio',
     images: [
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'R.a.mohan Tiwari - Full-Stack Developer & Creator',
+    title: 'R.a.mohan Tiwari- a developer',
     description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
     images: ['/developer-avatar.png'],
   },
