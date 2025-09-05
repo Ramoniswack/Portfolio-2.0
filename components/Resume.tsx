@@ -1,6 +1,7 @@
 "use client"
 
 import { resumeData } from "@/lib/resume-data"
+import { generateEnhancedPDF } from "@/lib/enhanced-pdf-generator"
 
 interface ResumeProps {
   isForPDF?: boolean

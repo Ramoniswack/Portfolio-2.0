@@ -7,6 +7,9 @@ import { CustomCursor } from "@/components/CustomCursor"
 import { DynamicNavbar } from "@/components/DynamicNavbar"
 import { PreloaderProvider } from "@/components/PreloaderProvider"
 import { NavigationProvider } from "@/components/NavigationProvider"
+import { CompilationProvider } from "@/components/CompilationProvider"
+import { GlobalLoadingIndicator } from "@/components/GlobalLoadingIndicator"
+import { MediaPreloader } from "@/components/MediaPreloader"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,29 +31,27 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "R.a.mon Tiwari - Full-Stack Developer & Creator",
-    template: "%s | R.a.mon Tiwari"
+    default: "R.a.mohan Tiwari - Full-Stack Developer & Creator",
+    template: "%s | R.a.mohan Tiwari"
   },
   description: "Full-Stack Developer & Creator exploring modern web technologies. React, TypeScript, Node.js specialist. Web Development Intern at Xav Technologies. Developer, Writer & Musician.",
   keywords: [
-    "Full-Stack Developer",
-    "React Developer", 
-    "TypeScript",
-    "Node.js",
+    "R.a.mohan Tiwari",
+    "Full-Stack Developer", 
     "Web Developer",
+    "React Developer",
+    "TypeScript Developer",
     "Frontend Developer",
-    "JavaScript",
-    "Next.js",
+    "Backend Developer",
+    "Nepal Developer",
+    "Pokhara Developer",
     "Portfolio",
-    "R.a.mon Tiwari",
-    "Ramon Tiwari",
-    "Xav Technologies",
-    "Nepal Developer"
+    "Web Development",
+    "Software Engineer"
   ],
-  authors: [{ name: "R.a.mon Tiwari" }],
-  creator: "R.a.mon Tiwari",
-  publisher: "R.a.mon Tiwari",
-  robots: {
+  authors: [{ name: "R.a.mohan Tiwari" }],
+  creator: "R.a.mohan Tiwari",
+  publisher: "R.a.mohan Tiwari",  robots: {
     index: true,
     follow: true,
     googleBot: {
@@ -65,24 +66,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://ramohan.com.np',
-    title: 'R.a.mon Tiwari - Full-Stack Developer & Creator',
-    description: 'Full-Stack Developer & Creator exploring modern web technologies. React, TypeScript, Node.js specialist.',
-    siteName: 'R.a.mon Tiwari Portfolio',
+    title: 'R.a.mohan Tiwari - Full-Stack Developer & Creator',
+    description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
+    siteName: 'R.a.mohan Tiwari Portfolio',
     images: [
       {
-        url: '/favicon-circle.png',
+        url: '/developer-avatar.png',
         width: 1200,
         height: 630,
-        alt: 'R.a.mon Tiwari - Full-Stack Developer Portfolio',
-      }
+        alt: 'R.a.mohan Tiwari - Full-Stack Developer Portfolio',
+      },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'R.a.mon Tiwari - Full-Stack Developer & Creator',
-    description: 'Full-Stack Developer & Creator exploring modern web technologies. React, TypeScript, Node.js specialist.',
-    images: ['/favicon-circle.png'],
-    creator: '@ramontiw',
+    title: 'R.a.mohan Tiwari - Full-Stack Developer & Creator',
+    description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
+    images: ['/developer-avatar.png'],
   },
   icons: {
     icon: [
@@ -99,14 +99,15 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/site.webmanifest',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
   verification: {
     google: 'google-verification-code-here', // Add your Google verification code
   },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export default function RootLayout({
@@ -117,13 +118,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased">
-        <PreloaderProvider>
-          <NavigationProvider>
-            <CustomCursor />
-            <DynamicNavbar />
-            {children}
-          </NavigationProvider>
-        </PreloaderProvider>
+        <MediaPreloader />
+        <CompilationProvider>
+          <GlobalLoadingIndicator />
+          <PreloaderProvider>
+            <NavigationProvider>
+              <CustomCursor />
+              <DynamicNavbar />
+              {children}
+            </NavigationProvider>
+          </PreloaderProvider>
+        </CompilationProvider>
       </body>
     </html>
   )
