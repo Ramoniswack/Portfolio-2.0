@@ -10,6 +10,7 @@ import { NavigationProvider } from "@/components/NavigationProvider"
 import { CompilationProvider } from "@/components/CompilationProvider"
 import { GlobalLoadingIndicator } from "@/components/GlobalLoadingIndicator"
 import { MediaPreloader } from "@/components/MediaPreloader"
+import { SmoothPageTransition } from "@/components/SmoothPageTransition"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -125,7 +126,9 @@ export default function RootLayout({
             <NavigationProvider>
               <CustomCursor />
               <DynamicNavbar />
-              {children}
+              <SmoothPageTransition>
+                {children}
+              </SmoothPageTransition>
             </NavigationProvider>
           </PreloaderProvider>
         </CompilationProvider>

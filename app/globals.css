@@ -627,3 +627,30 @@ html {
   object-fit: cover;
   background-color: #1f2937;
 }
+
+/* Hover hint styling */
+.hover-hint {
+  opacity: 0;
+  transition: opacity 700ms ease, transform 700ms ease;
+  transform: translateY(6px);
+}
+.hover-hint.opacity-100 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth page transition wrapper */
+.smooth-page-transition {
+  will-change: opacity, transform;
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+.smooth-page-transition.spt-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+}
+.smooth-page-transition.spt-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}

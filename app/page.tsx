@@ -11,6 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { CustomEase } from "gsap/CustomEase"
 import Image from "next/image"
 import { VideoProjectCard } from "@/components/VideoProjectCard"
+import { HoverHint } from "@/components/HoverHint"
 import { ExternalLink } from "lucide-react"
 import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
 
@@ -336,13 +337,17 @@ export default function HomePage() {
           <SectionWaveTransition colorScheme="purple" direction="down" intensity="medium" />
           
           <div className="max-w-7xl mx-auto animate-on-scroll relative z-10">
-            <div className="text-center mb-16">
+              <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6 bg-gradient-to-r from-foreground via-accent to-accent2 bg-clip-text text-transparent">
                 Featured Projects
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Discover my latest work through interactive previews showcasing modern web technologies and innovative solutions.
               </p>
+              {/* Hover hint */}
+              <div className="mt-4">
+                <HoverHint />
+              </div>
             </div>
 
             {/* Projects Grid - Masonry-style layout like in screenshot */}
