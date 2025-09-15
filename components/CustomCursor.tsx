@@ -154,7 +154,7 @@ export function CustomCursor() {
           opacity: cursorState === 'normal' ? 1 : 0,
           transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'normal' ? 'scale(1)' : 'scale(0.8)',
-          filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          filter: 'none',
           willChange: 'transform, opacity',
         }}
       />
@@ -176,7 +176,7 @@ export function CustomCursor() {
           opacity: cursorState === 'hover' ? 1 : 0,
           transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'hover' ? 'scale(1.1)' : 'scale(0.8)',
-          filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          filter: 'none',
           willChange: 'transform, opacity',
         }}
       />
@@ -198,7 +198,7 @@ export function CustomCursor() {
           opacity: cursorState === 'scroll' ? 1 : 0,
           transition: 'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: cursorState === 'scroll' ? 'scale(1)' : 'scale(0.8)',
-          filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+          filter: 'none',
           willChange: 'transform, opacity',
         }}
       />

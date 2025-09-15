@@ -192,39 +192,6 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       isNavigating: isPageLoading || isCompiling
     }}>
       {children}
-      
-      {/* Small loading indicator in top-right corner instead of full-screen overlay */}
-      {(isPageLoading || showContentMismatch) && (
-        <div className="fixed top-4 right-4 z-[10000] bg-background/90 backdrop-blur-md border border-border rounded-lg px-4 py-2 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <div className={`w-4 h-4 border-2 border-t-transparent rounded-full animate-spin ${
-                showContentMismatch ? 'border-orange-500' : 'border-accent'
-              }`} />
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">
-                  Loading {currentPageName}...
-                </span>
-                {showContentMismatch && (
-                  <span className="text-xs text-orange-600 dark:text-orange-400">
-                    Waiting for content...
-                  </span>
-                )}
-              </div>
-            </div>
-                        <button
-              onClick={cancelLoading}
-              className="p-1 hover:bg-muted rounded-sm transition-colors group ml-2"
-              title="Dismiss loading indicator (navigation will continue)"
-              aria-label="Dismiss loading indicator"
-            >
-              <svg className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
     </CompilationContext.Provider>
   )
 }
