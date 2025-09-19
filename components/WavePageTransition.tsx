@@ -10,6 +10,9 @@ interface WavePageTransitionProps {
   onComplete?: () => void
 }
 
+// Toggle to disable page-level wave transitions globally
+const DISABLE_ANIMATIONS = true
+
 export function WavePageTransition({ 
   isActive, 
   direction = 'enter', 
@@ -17,6 +20,16 @@ export function WavePageTransition({
   onComplete 
 }: WavePageTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const shouldAnimate = () => {
+    try {
+      const shown = sessionStorage.getItem('waveShown')
+      // Only animate if wave hasn't been shown this session
+      return !shown && typeof window !== 'undefined' && window.location.pathname === '/'
+    } catch (e) {
+      return false
+    }
+  }
 
   const colorSchemes = {
     blue: {
@@ -53,6 +66,15 @@ export function WavePageTransition({
 
   useEffect(() => {
     if (!containerRef.current || !isActive) return
+
+    // If animations are disabled globally or the per-session shouldAnimate
+    // check returns false, short-circuit but invoke onComplete so callers
+    // continue normally.
+    if (DISABLE_ANIMATIONS || !shouldAnimate()) {
+      try { sessionStorage.setItem('waveShown', '1') } catch {}
+      onComplete?.()
+      return
+    }
 
     const waves = containerRef.current.querySelectorAll('.transition-wave')
     const tl = gsap.timeline({

@@ -1,7 +1,7 @@
 
 import Link from "next/link"
 import { CustomCursor } from "@/components/CustomCursor"
-import { SectionWaveTransition } from "@/components/SectionWaveTransition"
+// SectionWaveTransition removed to eliminate background decorations
 import { BlogPageClient } from "@/components/BlogPageClient"
 import fs from "node:fs"
 import path from "node:path"
@@ -61,16 +61,11 @@ export default async function BlogsPage() {
       <CustomCursor />
       <main className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="blogs">
         <div className="max-w-6xl mx-auto relative overflow-hidden">
-          <SectionWaveTransition colorScheme="emerald" direction="up" intensity="light" />
           
           {/* Header Section */}
           <header className="text-center mb-20 relative z-10">
             <div className="relative">
-              {/* Background decoration */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-32 -left-48 w-96 h-96 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-full blur-3xl"></div>
-                <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-l from-accent2/5 via-accent2/10 to-accent2/5 rounded-full blur-2xl"></div>
-              </div>
+              {/* Background decoration removed per request */}
               
               <div className="relative z-10" data-reveal>
                 <div className="inline-flex items-center gap-3 mb-8">
@@ -96,7 +91,6 @@ export default async function BlogsPage() {
 
           {/* Blog Posts Grid */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-            <SectionWaveTransition colorScheme="pink" direction="down" intensity="medium" />
             {posts.length === 0 && (
               <p className="text-muted-foreground col-span-full text-center">No blog posts found.</p>
             )}
@@ -107,8 +101,7 @@ export default async function BlogsPage() {
                 data-reveal
                 data-pointer="interactive"
               >
-                {/* Card Background Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/3 via-transparent to-accent2/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Card Background Effect removed per request */}
                 
                 <div className="p-8 relative z-10">
                   {/* Meta Information */}
@@ -123,7 +116,7 @@ export default async function BlogsPage() {
                         })}
                       </span>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/10 to-accent2/10 text-accent border border-accent/20 text-xs font-semibold tracking-wide">
+                    <span className="px-3 py-1 rounded-full bg-muted/10 text-accent border border-accent/10 text-xs font-semibold tracking-wide">
                       {post.category}
                     </span>
                   </div>
@@ -173,8 +166,7 @@ export default async function BlogsPage() {
           </section>
 
           {/* Newsletter Section */}
-          <section className="bg-gradient-to-br from-accent/10 to-accent2/10 rounded-2xl p-8 mt-20 text-center relative overflow-hidden" data-reveal>
-            <SectionWaveTransition colorScheme="blue" direction="up" intensity="strong" />
+          <section className="rounded-2xl p-8 mt-20 text-center relative overflow-hidden bg-card" data-reveal>
             
             <div className="relative z-10">
               <h3 className="text-2xl font-heading font-bold mb-4 text-foreground">

@@ -87,9 +87,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon-circle.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-circle.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-circle.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon-circle.png', sizes: '180x180', type: 'image/png' },
       { url: '/favicon.ico', sizes: 'any' },
     ],
     apple: [
@@ -119,6 +119,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased">
+        {/* Set a global runtime flag to disable animations for performance/QA */}
+        <Script id="disable-animations" strategy="beforeInteractive">
+          {`(function(){ try{ window.__DISABLE_ANIMATIONS = true }catch(e){} })()`}
+        </Script>
         <MediaPreloader />
         <CompilationProvider>
           <GlobalLoadingIndicator />

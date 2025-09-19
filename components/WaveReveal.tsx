@@ -9,6 +9,9 @@ interface WaveRevealProps {
   onComplete: () => void
 }
 
+// Toggle this to true to fully disable the wave reveal animation.
+const DISABLE_ANIMATIONS = true
+
 export function WaveReveal({ isActive, onComplete }: WaveRevealProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const pathRef = useRef<SVGPathElement>(null)
@@ -18,16 +21,22 @@ export function WaveReveal({ isActive, onComplete }: WaveRevealProps) {
     if (!isActive || !containerRef.current || !pathRef.current) return
 
     const container = containerRef.current
-    const path = pathRef.current
 
-    if (prefersReducedMotion) {
+    // If animations are globally disabled, skip GSAP entirely but still
+    // mark the wave as shown and call onComplete so callers aren't blocked.
+    if (DISABLE_ANIMATIONS || prefersReducedMotion) {
+      try { sessionStorage.setItem('waveShown', '1') } catch {}
+      container.style.display = 'none'
       onComplete()
       return
     }
 
+    const path = pathRef.current
+
     const tl = gsap.timeline({
       onComplete: () => {
         container.style.display = "none"
+        try { sessionStorage.setItem('waveShown', '1') } catch {}
         onComplete()
       },
     })

@@ -62,11 +62,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <div className="max-w-4xl mx-auto">
         {/* Header Section */}
         <header className="mb-16 text-center relative">
-          {/* Background decoration */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-20 -left-32 w-96 h-96 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-full blur-3xl"></div>
-            <div className="absolute -top-32 -right-20 w-80 h-80 bg-gradient-to-l from-accent2/5 via-accent2/10 to-accent2/5 rounded-full blur-2xl"></div>
-          </div>
+          {/* Background decoration removed per request */}
           
           {/* Meta info */}
           <div className="flex items-center justify-center gap-6 mb-8 relative z-10">
@@ -82,7 +78,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </div>
             <div className="w-1 h-1 rounded-full bg-muted-foreground/30"></div>
             <div className="relative">
-              <span className="px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent2/10 text-accent border border-accent/20 text-sm font-semibold tracking-wide backdrop-blur-sm">
+              <span className="px-4 py-2 rounded-full bg-muted/10 text-accent border border-accent/10 text-sm font-semibold tracking-wide">
                 {frontmatter.category || "Blog"}
               </span>
             </div>

@@ -10,6 +10,9 @@ interface SectionWaveTransitionProps {
   intensity?: 'light' | 'medium' | 'strong'
 }
 
+// Toggle to disable section-level wave/reveal animations globally
+const DISABLE_ANIMATIONS = true
+
 export function SectionWaveTransition({ 
   colorScheme, 
   direction = 'up', 
@@ -48,6 +51,16 @@ export function SectionWaveTransition({
   useEffect(() => {
     if (!containerRef.current) return
 
+    // If animations are disabled globally, do nothing
+    if (DISABLE_ANIMATIONS) return
+
+    try {
+      const shown = sessionStorage.getItem('waveShown')
+      if (shown) return
+    } catch (e) {
+      // ignore
+    }
+
     gsap.registerPlugin(ScrollTrigger)
 
     const waves = containerRef.current.querySelectorAll('.section-wave')
@@ -76,8 +89,7 @@ export function SectionWaveTransition({
           }
         }
       )
-    })
-
+  })
     return () => {
       ScrollTrigger.getAll().forEach(st => st.kill())
     }

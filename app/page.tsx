@@ -177,24 +177,68 @@ export default function HomePage() {
           return
         }
         
-        setupScrollAnimations()
-        
-        // Wait for stability before completing
-        console.log(`⏳ Home page waiting for stability...`)
-        setTimeout(() => {
-          // Final verification
-          const finalCheck = document.querySelector('[data-page="home"]') !== null &&
-                            window.location.pathname === '/' &&
-                            document.readyState === 'complete'
-          
-          if (finalCheck) {
-            console.log(`🏁 Home page completing load`)
-            completePageLoad()
-          } else {
-            console.log(`⚠️ Home page final check failed, retrying...`)
-            setTimeout(waitForPageReady, 500)
+        // Ensure scroll animations are only initialized after the wave reveal
+        // has completed. WaveReveal (or other transition) should set
+        // sessionStorage.setItem('waveShown', '1') when finished. We poll for
+        // that flag for a short timeout and then proceed — this prevents the
+        // entrance 'pop' when scroll/entrance tweens run while the wave is
+        // still animating.
+        const callSetupWhenReady = (maxWait = 3000) => {
+          const start = Date.now()
+
+          const tryCall = () => {
+            try {
+              const waveShown = typeof window !== 'undefined' && sessionStorage.getItem('waveShown') === '1'
+
+              if (waveShown) {
+                setupScrollAnimations()
+                finishChecks()
+                return
+              }
+
+              if (Date.now() - start > maxWait) {
+                // Give up waiting after timeout — still proceed to avoid
+                // leaving the page without animations forever.
+                console.log('⏱ wave not detected within timeout — initializing scroll animations')
+                setupScrollAnimations()
+                finishChecks()
+                return
+              }
+
+              // Retry shortly
+              setTimeout(tryCall, 150)
+            } catch (e) {
+              // If sessionStorage isn't available for any reason, proceed.
+              console.warn('⚠️ Error while checking waveShown, proceeding', e)
+              setupScrollAnimations()
+              finishChecks()
+            }
           }
-        }, 500)
+
+          tryCall()
+        }
+
+        const finishChecks = () => {
+          // Wait for stability before completing
+          console.log(`⏳ Home page waiting for stability...`)
+          setTimeout(() => {
+            // Final verification
+            const finalCheck = document.querySelector('[data-page="home"]') !== null &&
+                              window.location.pathname === '/' &&
+                              document.readyState === 'complete'
+
+            if (finalCheck) {
+              console.log(`🏁 Home page completing load`)
+              completePageLoad()
+            } else {
+              console.log(`⚠️ Home page final check failed, retrying...`)
+              setTimeout(waitForPageReady, 500)
+            }
+          }, 500)
+        }
+
+        // Start polling for the wave-complete flag, or proceed after timeout.
+        callSetupWhenReady(3000)
       }
       
       // Start checking after initial delay

@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 class ScrollTriggerManager {
   private triggers: ScrollTrigger[] = []
   private isNavigating = false
+  // Global toggle to disable scroll/GSAP animations site-wide for performance
+  private disableAnimations = false
 
   setNavigating(navigating: boolean) {
     this.isNavigating = navigating
@@ -33,7 +35,7 @@ class ScrollTriggerManager {
   }
 
   create(config: any) {
-    if (this.isNavigating) {
+    if (this.isNavigating || this.disableAnimations) {
       return null
     }
 
@@ -60,8 +62,12 @@ export const scrollTriggerManager = new ScrollTriggerManager()
 
 // Utility function to create scroll-based animations safely
 export const createScrollAnimation = (element: any, config: any, navigationState: boolean) => {
-  if (navigationState) {
-    return null // Don't create animations during navigation
+  // If animations are disabled globally or during navigation, do nothing.
+  try {
+    const disabled = (typeof window !== 'undefined' && (window as any).__DISABLE_ANIMATIONS) || false
+    if (navigationState || disabled) return null
+  } catch (e) {
+    // ignore
   }
 
   const scrollTriggerConfig = {

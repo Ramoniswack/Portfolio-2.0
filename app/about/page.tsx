@@ -5,7 +5,7 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Image from "next/image"
 import { CustomCursor } from "@/components/CustomCursor"
-import { SectionWaveTransition } from "@/components/SectionWaveTransition"
+// SectionWaveTransition removed from this page to avoid background blobs
 import { useCompilation } from "@/components/CompilationProvider"
 import { downloadResume } from "@/lib/simple-resume-download"
 import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
@@ -149,9 +149,8 @@ export default function AboutPage() {
     <>
       <CustomCursor />
       <main ref={rootRef} className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="about">
-        {/* Hero Section */}
-        <section className="max-w-4xl mx-auto text-center mb-20 relative overflow-hidden">
-        <SectionWaveTransition colorScheme="orange" direction="up" intensity="light" />
+  {/* Hero Section */}
+  <section className="max-w-4xl mx-auto text-center mb-20 relative overflow-hidden">
         <div className="mb-8" data-reveal>
           {portfolioData?.user.avatar_url && (
             <Image
@@ -228,7 +227,6 @@ export default function AboutPage() {
 
       {/* About Content */}
       <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
-        <SectionWaveTransition colorScheme="pink" direction="down" intensity="medium" />
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div data-reveal>
             <h2 className="text-2xl font-bold mb-6 text-foreground">Developer & Creator</h2>
@@ -242,7 +240,7 @@ export default function AboutPage() {
               code and music, creating harmony between logic and art.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-accent/10 to-accent2/10 p-8 rounded-2xl" data-reveal>
+          <div className="bg-card p-8 rounded-2xl" data-reveal>
             <h3 className="text-xl font-semibold mb-4 text-foreground">Quick Facts</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-center gap-3">
@@ -271,8 +269,7 @@ export default function AboutPage() {
       </section>
 
       {/* Experience Section */}
-      <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
-        <SectionWaveTransition colorScheme="purple" direction="up" intensity="strong" />
+  <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
           Experience
         </h2>
@@ -296,71 +293,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Tech Stack Section */}
-      <section className="max-w-6xl mx-auto relative overflow-hidden mb-16 z-10">
-        <SectionWaveTransition colorScheme="blue" direction="down" intensity="medium" />
-        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
-          Tech Stack
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 px-4 pb-8 relative z-20" data-reveal>
+      {/* Tech Stack Section (single unified grid) */}
+      <section className="max-w-5xl mx-auto relative overflow-hidden my-12 z-10 px-4" data-reveal>
+        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-foreground">Tech Stack</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
+          {/** Each card: consistent height, centered circular icon, subtle shadow */}
           {[
-            { name: "HTML5", icon: "/icons/html-5.png" },
-            { name: "CSS3", icon: "/icons/css-3.png" },
-            { name: "JavaScript", icon: "/icons/js.png" },
-            { name: "TypeScript", icon: "/icons/typescript.png" },
-            { name: "PHP", icon: "/icons/php.png" },
-            { name: "MySQL", icon: "/icons/mysql-database.png" },
-            { name: "MongoDB", icon: "/icons/mongodb.png" },
-            { name: "React", icon: "/icons/react.png" },
-            { name: "TailwindCSS", icon: "/icons/Tailwindcss.png" },
-            { name: "Zod", icon: "/icons/zod.png" },
-            { name: "Java", icon: "/icons/java.png" },
-            { name: "C++", icon: "/icons/c-.png" },
-            { name: "SQL Server", icon: "/icons/sql-server.png" },
-          ].map((tech, index) => (
-            <div
-              key={index}
-              className="relative flex flex-col items-center justify-center bg-card/95 backdrop-blur-sm rounded-xl p-4 min-h-[100px] group overflow-visible z-10"
-              data-pointer="interactive"
-              style={{
-                border: '2px solid transparent',
-                backgroundClip: 'padding-box',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-              onMouseEnter={(e) => {
-                const element = e.currentTarget
-                element.style.border = '2px solid hsl(var(--accent) / 0.5)'
-                element.style.transform = 'scale(1.05)'
-                element.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-              }}
-              onMouseLeave={(e) => {
-                const element = e.currentTarget
-                element.style.border = '2px solid hsl(var(--border))'
-                element.style.transform = 'scale(1)'
-                element.style.boxShadow = 'none'
-              }}
-            >
-              {/* Background border always visible */}
-              <div 
-                className="absolute inset-0 rounded-xl" 
-                style={{
-                  border: '2px solid hsl(var(--border))',
-                  transition: 'border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              />
-              
-              <div className="flex items-center justify-center w-12 h-12 mb-3 relative z-10">
-                <Image
-                  src={tech.icon}
-                  alt={tech.name}
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-200"
-                  loading="lazy"
-                  quality={75}
-                />
+            { src: '/icons/react.png', label: 'React' },
+            { src: '/icons/Tailwindcss.png', label: 'Tailwind CSS' },
+            { src: '/icons/materialui.png', label: 'Material UI' },
+            { src: '/icons/shadcnui.png', label: 'shadcn/ui' },
+            { src: '/icons/java.png', label: 'Java' },
+            { src: '/icons/php.png', label: 'PHP' },
+            { src: '/icons/zustand.png', label: 'Zustand' },
+            { src: '/icons/zod.png', label: 'Zod' },
+            { src: '/icons/mongodb.png', label: 'MongoDB' },
+            { src: '/icons/mysql-database.png', label: 'MySQL' },
+            { src: '/icons/postgresql.png', label: 'PostgreSQL' },
+          ].map((tech) => (
+            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200">
+              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner">
+                <Image src={tech.src} alt={tech.label} width={40} height={40} className="w-9 h-9 object-contain" />
               </div>
-              <span className="text-foreground font-medium text-sm text-center leading-tight relative z-10">{tech.name}</span>
+              <span className="text-foreground text-sm font-medium">{tech.label}</span>
             </div>
           ))}
         </div>
@@ -368,7 +323,6 @@ export default function AboutPage() {
 
       {/* Social Links Section */}
       <section className="max-w-6xl mx-auto mt-12 mb-16 relative overflow-visible z-10">
-        <SectionWaveTransition colorScheme="emerald" direction="up" intensity="light" />
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
           Connect With Me
         </h2>
@@ -437,7 +391,6 @@ export default function AboutPage() {
 
       {/* Download Resume Section */}
       <section className="max-w-6xl mx-auto mb-20 text-center relative overflow-hidden z-5 pt-4">
-        <SectionWaveTransition colorScheme="emerald" direction="up" intensity="medium" />
         <h2 className="text-4xl md:text-5xl font-heading font-bold mb-8 text-foreground" data-reveal>
           Resume
         </h2>
@@ -446,7 +399,7 @@ export default function AboutPage() {
         </p>
         <button
           onClick={downloadResume}
-          className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/25"
+          className="group inline-flex items-center gap-3 px-8 py-4 bg-accent text-accent-foreground rounded-full text-lg font-medium transition-all duration-200 hover:scale-102"
           data-pointer="interactive"
           data-reveal
         >
