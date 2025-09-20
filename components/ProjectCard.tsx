@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from 'next/image'
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -42,7 +43,7 @@ export function ProjectCard({ title, description, topics = [], language, stars, 
       <div className="flex items-center gap-3 mb-4">
         {logo && (
           <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/10 border border-border/50 flex items-center justify-center">
-            <img src={logo} alt={`${title} logo`} className="w-8 h-8 object-contain" />
+            <Image src={logo} alt={`${title} logo`} width={32} height={32} className="object-contain" />
           </div>
         )}
         <div>
@@ -60,7 +61,7 @@ export function ProjectCard({ title, description, topics = [], language, stars, 
       </div>
       
       {description && <p className="text-muted-foreground mb-4 text-sm leading-relaxed">{description}</p>}
-      <div className="aspect-video rounded-lg overflow-hidden bg-black/20 mb-4">
+      <div className="aspect-video rounded-lg overflow-hidden bg-black/20 mb-4 relative">
         {preview ? (
           <video
             ref={videoRef}
@@ -77,7 +78,9 @@ export function ProjectCard({ title, description, topics = [], language, stars, 
             <source src={preview} type="video/mp4" />
           </video>
         ) : (
-          poster && <img src={poster} alt="Preview" className="w-full h-full object-cover"/>
+          poster && (
+            <Image src={poster} alt="Preview" fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
+          )
         )}
       </div>
       <div className="flex flex-wrap gap-2 mb-4">

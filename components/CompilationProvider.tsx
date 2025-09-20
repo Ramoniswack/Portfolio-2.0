@@ -101,6 +101,12 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     setCurrentPageName(pageName)
     setIsCompiling(true)
     setIsPageLoading(true)
+    // expose a short-lived global flag so lower-level components can know
+    // the app is in a navigation/loading state (used to avoid duplicate
+    // animations on navigation).
+    try {
+      ;(window as any).__IS_NAVIGATING = true
+    } catch (e) {}
     
     // FREEZE current page animations to prevent re-triggering
     scrollTriggerManager.setNavigating(true)
@@ -139,6 +145,9 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       setShowContentMismatch(false)
       manualLoadingRef.current = false
       
+      // clear the global navigating flag
+      try { (window as any).__IS_NAVIGATING = false } catch (e) {}
+
       // UN-FREEZE animations for the new page
       scrollTriggerManager.setNavigating(false)
       console.log(`🎬 Un-froze animations for new page`)
@@ -163,6 +172,8 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     setShowContentMismatch(false)
     manualLoadingRef.current = false
     
+  try { (window as any).__IS_NAVIGATING = false } catch (e) {}
+
     // UN-FREEZE animations but keep the current navigation
     scrollTriggerManager.setNavigating(false)
     
