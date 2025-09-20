@@ -52,6 +52,10 @@ export function VideoProjectCard({
       </>
     )
   }
+  // Note: mobile button sizing is intentionally handled via the `isMobile`
+  // prop which applies smaller padding and a consistent min-height so that
+  // cards like Kharcha-Meter and aaja-ta-suree have uniform action button
+  // height on small viewports.
   const containerRef = useRef<HTMLDivElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   // sourceRef removed - we'll set video.src directly for reliability
