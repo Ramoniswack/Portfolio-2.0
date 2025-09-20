@@ -268,7 +268,24 @@ export function VideoProjectCard({
       onMouseOut={handleMouseOut}
       onClick={(e) => {
         e.stopPropagation()
-        // user gesture fallback: force play on click
+        // On touch devices or explicit mobile card, open details modal instead
+        // of attempting to play the preview which can show a blank player while
+        // metadata loads. This provides faster UX for mobile/tap users.
+        let isTouchDevice = false
+        try {
+          if (typeof navigator !== 'undefined') {
+            isTouchDevice = Boolean(navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || ('ontouchstart' in window)
+          }
+        } catch (err) {
+          isTouchDevice = false
+        }
+
+        if (isMobile || isTouchDevice) {
+          setDetailsOpen(true)
+          return
+        }
+
+        // user gesture fallback: force play on click for desktop
         console.debug('[VideoProjectCard] card clicked - attempting user-gesture play')
         playVideo(true)
       }}
