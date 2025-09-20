@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import React, { useRef, useEffect, useState } from "react"
+// GSAP/ScrollTrigger removed to disable page transitions/reveals
 import Image from "next/image"
 import { CustomCursor } from "@/components/CustomCursor"
+// EdgeMerge removed for About page to avoid double animations
 // SectionWaveTransition removed from this page to avoid background blobs
 import { useCompilation } from "@/components/CompilationProvider"
 import { downloadResume } from "@/lib/simple-resume-download"
@@ -32,11 +32,9 @@ interface PortfolioData {
 export default function AboutPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null)
-  const { completePageLoad, isPageLoading, isNavigating } = useCompilation()
+  const { completePageLoad } = useCompilation()
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-
     // Set static portfolio data - updated with correct GitHub information
     setPortfolioData({
       user: {
@@ -56,123 +54,46 @@ export default function AboutPage() {
   }, [])
 
   useEffect(() => {
-    if (!rootRef.current) return
-    
-    console.log(`📋 About page useEffect triggered, isNavigating: ${isNavigating}`)
-    
-    // Wait for ACTUAL Next.js compilation completion
-    const waitForNextJSCompilation = () => {
-      if (!rootRef.current) return
-      
-      // Check if Next.js has actually compiled this page
-      const hasCorrectContent = document.querySelector('[data-page="about"]') !== null
-      const isDocumentComplete = document.readyState === 'complete'
-      const hasCorrectURL = window.location.pathname.includes('/about')
-      const hasReactHydrated = document.querySelector('#__next') !== null || document.body.children.length > 0
-      const noLoadingSpinners = document.querySelectorAll('[class*="loading"], [class*="spinner"]').length <= 1 // Allow our own loading indicator
-      
-      const isNextJSCompiled = hasCorrectContent && isDocumentComplete && hasCorrectURL && hasReactHydrated && noLoadingSpinners
-      
-      console.log(`🔍 About page Next.js compilation check:`, {
-        hasCorrectContent,
-        isDocumentComplete,
-        hasCorrectURL,
-        hasReactHydrated,
-        noLoadingSpinners,
-        isNextJSCompiled,
-        currentURL: window.location.pathname
-      })
-      
-      if (isNextJSCompiled) {
-        // Next.js compilation is complete, set up animations
-        console.log(`🎨 Setting up GSAP animations for About page - Next.js compilation confirmed`)
-        gsap.registerPlugin(ScrollTrigger)
-        
-        const elements = rootRef.current.querySelectorAll("[data-reveal]")
-        
-        // Create scroll animation using the utility function
-        createScrollAnimation(
-          elements,
-          {
-            from: { 
-              opacity: 0, 
-              y: 30,
-              scale: 0.95
-            },
-            to: {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.8,
-              stagger: 0.1,
-              ease: "power2.out",
-            },
-            scrollTrigger: {
-              trigger: rootRef.current,
-              start: "top 80%",
-              end: "bottom 20%",
-            }
-          },
-          isNavigating
-        )
-
-        // Complete page load - this will remove the loading indicator
-        console.log(`🏁 About page completing load - Next.js compilation verified`)
-        setTimeout(() => {
-          completePageLoad()
-        }, 300)
-      } else {
-        // Keep waiting for Next.js compilation
-        setTimeout(waitForNextJSCompilation, 500)
-      }
-    }
-    
-    // Start checking after a delay to let Next.js start compilation
-    setTimeout(() => {
-      waitForNextJSCompilation()
-    }, 1000)
-
-    // Cleanup function to kill all ScrollTriggers and animations
-    return () => {
-      // Kill all ScrollTriggers
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-      
-      // Kill any running animations on elements with data-reveal
-      if (rootRef.current) {
-        const elements = rootRef.current.querySelectorAll("[data-reveal]")
-        gsap.killTweensOf(elements)
-      }
-    }
-  }, [completePageLoad, isNavigating])
+    // No page transitions or GSAP reveals for About page — keep it simple
+    // and complete the preloader immediately so navigation feels instant.
+    const t = setTimeout(() => {
+      try { completePageLoad() } catch (e) {}
+    }, 50)
+    return () => clearTimeout(t)
+  }, [completePageLoad])
 
   return (
-    <>
-      <CustomCursor />
+    <React.Fragment>
+  <CustomCursor />
       <main ref={rootRef} className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="about">
-  {/* Hero Section */}
+  {/* Hero Section (static, no reveal) */}
   <section className="max-w-4xl mx-auto text-center mb-20 relative overflow-hidden">
-        <div className="mb-8" data-reveal>
+    <div className="mb-8">
           {portfolioData?.user.avatar_url && (
-            <Image
-              src={portfolioData.user.avatar_url}
-              alt={portfolioData.user.name}
-              width={120}
-              height={120}
-              className="rounded-full mx-auto mb-6 border-4 border-accent/20 shadow-2xl"
-            />
+            <div style={{ width: 120, height: 120, margin: '0 auto', display: 'grid', placeItems: 'center' }}>
+              <Image
+                src={portfolioData.user.avatar_url}
+                alt={portfolioData.user.name}
+                width={120}
+                height={120}
+                priority
+                loading="eager"
+                className="rounded-full mb-6 border-4 border-accent/20 shadow-2xl"
+              />
+            </div>
           )}
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 text-foreground" data-reveal>About Me
+  <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 text-foreground">About Me
           {/* About {portfolioData?.user.name || "R.a.mohan Tiwari"} */}
         </h1>
         
-        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed" data-reveal>
+  <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
           {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Exploring the modern web stack - React, TypeScript, Zod, and beyond."}
         </p>
 
         {/* Social Links */}
-        <div className="flex items-center justify-center gap-6 mb-8" data-reveal>
+  <div className="flex items-center justify-center gap-6 mb-8">
           <a 
             href={portfolioData?.user.html_url || "https://github.com/Ramoniswack"} 
             target="_blank" 
@@ -215,7 +136,7 @@ export default function AboutPage() {
           </a>
         </div>
 
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-12" data-reveal>
+  <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-12">
           <span className="flex items-center gap-2">
             <div className="w-2 h-2 bg-accent rounded-full"></div>📍{" "}
             {portfolioData?.user.location || "Pokhara, Nepal"}
@@ -225,58 +146,66 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* About Content */}
+      {/* About Content (static wrappers) */}
       <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div data-reveal>
-            <h2 className="text-2xl font-bold mb-6 text-foreground">Developer & Creator</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              I love learning new things and enjoy juggling code, ideas, and music. I'm passionate about deep focus and curiosity, 
-              always exploring the intersection of technology and creativity.
-            </p>
-            <h2 className="text-2xl font-bold mb-6 text-foreground">Writer & Musician</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              I write syntax and lyrics alike. My fingers switch between keyboard and guitar strings, finding rhythm in both 
-              code and music, creating harmony between logic and art.
-            </p>
-          </div>
-          <div className="bg-card p-8 rounded-2xl" data-reveal>
-            <h3 className="text-xl font-semibold mb-4 text-foreground">Quick Facts</h3>
-            <ul className="space-y-3 text-muted-foreground">
-              <li className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                Self-taught developer
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                Specialized in React & TypeScript
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                UI/UX development focused
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                Music & code enthusiast
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                Based in Pokhara, Nepal
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">Developer & Creator</h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                      I love learning new things and enjoy juggling code, ideas, and music. I'm passionate about deep focus and curiosity, 
+                      always exploring the intersection of technology and creativity.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">Writer & Musician</h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed">
+                      I write syntax and lyrics alike. My fingers switch between keyboard and guitar strings, finding rhythm in both 
+                      code and music, creating harmony between logic and art.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-card p-8 rounded-2xl">
+                <aside>
+                  <h3 className="text-xl font-semibold mb-4 text-foreground">Quick Facts</h3>
+                  <ul className="space-y-3 text-muted-foreground">
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      Self-taught developer
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      Specialized in React & TypeScript
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      UI/UX development focused
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      Music & code enthusiast
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      Based in Pokhara, Nepal
+                    </li>
+                  </ul>
+                </aside>
+              </div>
+            </div>
+          </section>
 
       {/* Experience Section */}
-  <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
-        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
+      <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
+        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground">
           Experience
         </h2>
         <div className="space-y-8">
           <div
             className="bg-card border border-border rounded-2xl p-8 hover:border-accent/50 transition-all duration-300 hover:shadow-lg"
-            data-reveal
             data-pointer="interactive"
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
@@ -294,9 +223,9 @@ export default function AboutPage() {
       </section>
 
       {/* Tech Stack Section (single unified grid) */}
-      <section className="max-w-5xl mx-auto relative overflow-hidden my-12 z-10 px-4" data-reveal>
-        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-foreground">Tech Stack</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
+      <section className="max-w-5xl mx-auto relative overflow-hidden my-12 z-10 px-4">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-foreground">Tech Stack</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
           {/** Each card: consistent height, centered circular icon, subtle shadow */}
           {[
             { src: '/icons/react.png', label: 'React' },
@@ -310,23 +239,23 @@ export default function AboutPage() {
             { src: '/icons/mongodb.png', label: 'MongoDB' },
             { src: '/icons/mysql-database.png', label: 'MySQL' },
             { src: '/icons/postgresql.png', label: 'PostgreSQL' },
-          ].map((tech) => (
-            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200">
+          ].map((tech, index) => (
+            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }}>
               <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner">
                 <Image src={tech.src} alt={tech.label} width={40} height={40} className="w-9 h-9 object-contain" />
               </div>
               <span className="text-foreground text-sm font-medium">{tech.label}</span>
             </div>
           ))}
-        </div>
+          </div>
       </section>
 
       {/* Social Links Section */}
       <section className="max-w-6xl mx-auto mt-12 mb-16 relative overflow-visible z-10">
-        <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground" data-reveal>
-          Connect With Me
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4 pb-8 relative z-20" data-reveal>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground">
+            Connect With Me
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4 pb-8 relative z-20">
           <a
             href="https://github.com/Ramoniswack"
             target="_blank"
@@ -386,31 +315,32 @@ export default function AboutPage() {
             </div>
             <span className="text-foreground font-medium text-xs sm:text-sm md:text-sm text-center leading-tight">LinkedIn</span>
           </a>
-        </div>
+          </div>
       </section>
 
       {/* Download Resume Section */}
       <section className="max-w-6xl mx-auto mb-20 text-center relative overflow-hidden z-5 pt-4">
-        <h2 className="text-4xl md:text-5xl font-heading font-bold mb-8 text-foreground" data-reveal>
-          Resume
-        </h2>
-        <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto" data-reveal>
-          Download my complete resume with detailed information about my education, experience, and technical skills.
-        </p>
-        <button
-          onClick={downloadResume}
-          className="group inline-flex items-center gap-3 px-8 py-4 bg-accent text-accent-foreground rounded-full text-lg font-medium transition-all duration-200 hover:scale-102"
-          data-pointer="interactive"
-          data-reveal
-        >
-          <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Download Resume
-        </button>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold mb-8 text-foreground">
+            Resume
+          </h2>
+          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+            Download my complete resume with detailed information about my education, experience, and technical skills.
+          </p>
+          <div>
+            <button
+              onClick={downloadResume}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-accent text-accent-foreground rounded-full text-lg font-medium transition-all duration-200 hover:scale-102"
+              data-pointer="interactive"
+            >
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download Resume
+            </button>
+          </div>
       </section>
     </main>
-    </>
+    </React.Fragment>
   )
 }
 

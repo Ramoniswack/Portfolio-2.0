@@ -57,7 +57,7 @@ export default async function BlogsPage() {
   const posts = await getPosts()
 
   return (
-    <BlogPageClient>
+    <>
       <CustomCursor />
       <main className="min-h-screen px-6 py-24 bg-background text-foreground" data-page="blogs">
         <div className="max-w-6xl mx-auto relative overflow-hidden">
@@ -67,7 +67,7 @@ export default async function BlogsPage() {
             <div className="relative">
               {/* Background decoration removed per request */}
               
-              <div className="relative z-10" data-reveal>
+              <div className="relative z-10">
                 <div className="inline-flex items-center gap-3 mb-8">
                   <div className="w-3 h-3 rounded-full bg-accent"></div>
                   <span className="text-accent font-semibold tracking-wider uppercase text-sm">Developer Insights</span>
@@ -98,7 +98,6 @@ export default async function BlogsPage() {
               <article 
                 key={post.slug} 
                 className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-accent/5 transition-all duration-500 hover:-translate-y-2 cursor-pointer"
-                data-reveal
                 data-pointer="interactive"
               >
                 {/* Card Background Effect removed per request */}
@@ -166,7 +165,7 @@ export default async function BlogsPage() {
           </section>
 
           {/* Newsletter Section */}
-          <section className="rounded-2xl p-8 mt-20 text-center relative overflow-hidden bg-card" data-reveal>
+          <section className="rounded-2xl p-8 mt-20 text-center relative overflow-hidden bg-card">
             
             <div className="relative z-10">
               <h3 className="text-2xl font-heading font-bold mb-4 text-foreground">
@@ -185,7 +184,7 @@ export default async function BlogsPage() {
           </section>
         </div>
       </main>
-    </BlogPageClient>
+    </>
   )
 }
 

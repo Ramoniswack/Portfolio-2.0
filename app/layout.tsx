@@ -10,7 +10,7 @@ import { NavigationProvider } from "@/components/NavigationProvider"
 import { CompilationProvider } from "@/components/CompilationProvider"
 import { GlobalLoadingIndicator } from "@/components/GlobalLoadingIndicator"
 import { MediaPreloader } from "@/components/MediaPreloader"
-import { SmoothPageTransition } from "@/components/SmoothPageTransition"
+// PageTransitionClient removed — motion folder disabled
 
 const inter = Inter({
   subsets: ["latin"],
@@ -130,9 +130,7 @@ export default function RootLayout({
             <NavigationProvider>
               <CustomCursor />
               <DynamicNavbar />
-              <SmoothPageTransition>
                 {children}
-              </SmoothPageTransition>
             </NavigationProvider>
           </PreloaderProvider>
         </CompilationProvider>
