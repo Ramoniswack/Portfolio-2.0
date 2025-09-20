@@ -4,10 +4,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { ExternalLink, Github, Star } from "lucide-react"
 import Image from "next/image"
 import { setActiveVideo, clearActiveVideo } from "@/lib/video-manager"
+import { useInViewOnce } from '@/lib/useInViewOnce'
+import DetailsPopup from './ui/DetailsPopup'
 
 interface VideoProjectCardProps {
   title: string
   description: string
+  details?: string
   topics: string[]
   language: string
   stars: number
@@ -21,6 +24,7 @@ interface VideoProjectCardProps {
 export function VideoProjectCard({
   title,
   description,
+  details,
   topics,
   language,
   stars,
@@ -30,6 +34,24 @@ export function VideoProjectCard({
   videoClip,
   isMobile = false
 }: VideoProjectCardProps) {
+  const [detailsOpen, setDetailsOpen] = useState(false)
+
+  function DetailsButton({ title, details }: { title?: string, details?: string }) {
+    return (
+      <>
+        <button
+          onClick={(e) => { e.stopPropagation(); setDetailsOpen(true) }}
+          className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20"
+          data-pointer="interactive"
+        >
+          Details
+        </button>
+        <DetailsPopup open={detailsOpen} onClose={() => setDetailsOpen(false)} title={title}>
+          {details}
+        </DetailsPopup>
+      </>
+    )
+  }
   const containerRef = useRef<HTMLDivElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   // sourceRef removed - we'll set video.src directly for reliability
@@ -40,6 +62,13 @@ export function VideoProjectCard({
   const [isError, setIsError] = useState(false)
   const [isInView, setIsInView] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [inViewRef, nearView] = useInViewOnce({ rootMargin: '200px' })
+
+  // attach both refs
+  useEffect(() => {
+    if (!containerRef.current) return
+    ;(inViewRef as any).current = containerRef.current
+  }, [inViewRef])
 
   // Lazy-load the video source when needed
   const ensureSourceLoaded = useCallback(() => {
@@ -240,6 +269,12 @@ export function VideoProjectCard({
         playVideo(true)
       }}
     >
+      {/* Hovered description bubble — positioned above/outside the video */}
+      <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-[90%] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="bg-card/90 text-sm text-muted-foreground p-3 rounded-lg shadow-lg backdrop-blur-sm">
+          {details || description}
+        </div>
+      </div>
       {/* Video Background */}
       <div className="absolute inset-0 bg-muted/20 video-container pointer-events-none">
         {!isError ? (
@@ -328,12 +363,12 @@ export function VideoProjectCard({
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <a
               href={repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200 rounded-lg text-sm font-medium"
+              className={`flex-1 flex items-center justify-center gap-2 px-3 ${isMobile ? 'py-1.5 text-xs min-h-[36px]' : 'py-2 text-sm min-h-[44px]'} bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200 rounded-lg font-medium`}
               data-pointer="interactive"
               onClick={(e) => e.stopPropagation()}
             >
@@ -345,7 +380,7 @@ export function VideoProjectCard({
                 href={liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-accent/90 backdrop-blur-sm text-accent-foreground hover:bg-accent transition-colors duration-200 rounded-lg text-sm font-medium"
+                className={`flex-1 flex items-center justify-center gap-2 px-3 ${isMobile ? 'py-1.5 text-xs min-h-[36px]' : 'py-2 text-sm min-h-[44px]'} bg-accent/90 backdrop-blur-sm text-accent-foreground hover:bg-accent transition-colors duration-200 rounded-lg font-medium`}
                 data-pointer="interactive"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -353,6 +388,10 @@ export function VideoProjectCard({
                 Live Demo
               </a>
             )}
+            {/* Details button opens a modal with extended info */}
+                <div className={`${isMobile ? 'min-h-[36px]' : ''}`}>
+                  <DetailsButton details={details || description} title={title} />
+                </div>
           </div>
         </div>
       </div>

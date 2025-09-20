@@ -14,6 +14,10 @@ import { VideoProjectCard } from "@/components/VideoProjectCard"
 import { HoverHint } from "@/components/HoverHint"
 import { ExternalLink } from "lucide-react"
 import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
+import dynamic from 'next/dynamic'
+import Reveal from '@/components/motion/Reveal'
+// Dynamic client-only wrappers to keep initial bundles small on low-end devices
+const Parallax = dynamic(() => import('@/components/ui/Parallax'), { ssr: false })
 
 // Define the types locally since we're no longer using GitHub API
 interface User {
@@ -322,29 +326,31 @@ export default function HomePage() {
         <section className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
           <SectionWaveTransition colorScheme="blue" direction="up" intensity="light" />
           
-          <div className="max-w-4xl mx-auto text-center animate-on-scroll relative z-10">
+          <Reveal as="div" className="max-w-4xl mx-auto text-center relative z-10">
             <div className="mb-8">
               {portfolioData?.user.avatar_url && (
-                <Image
-                  src={portfolioData.user.avatar_url}
-                  alt={portfolioData.user.name}
-                  width={120}
-                  height={120}
-                  className="rounded-full mx-auto mb-6 border-4 border-accent/20 shadow-2xl"
-                />
+                <Parallax speed={0.25}>
+                  <Image
+                    src={portfolioData.user.avatar_url}
+                    alt={portfolioData.user.name}
+                    width={120}
+                    height={120}
+                    className="rounded-full mx-auto mb-6 border-4 border-accent/20 shadow-2xl"
+                  />
+                </Parallax>
               )}
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+            <Reveal as="h1" className="text-5xl md:text-7xl font-heading font-bold mb-6 bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
               {portfolioData?.user.name || "R.a.mohan Tiwari"}
-            </h1>
+            </Reveal>
 
-            <p className="text-xl md:text-2xl text-accent font-semibold mb-4">a developer</p>
+            <Reveal as="p" className="text-xl md:text-2xl text-accent font-semibold mb-4">a developer</Reveal>
 
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            <Reveal as="p" className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               {portfolioData?.user.bio ||
                 "Crafting exceptional digital experiences with modern web technologies - React, TypeScript, and beyond."}
-            </p>
+            </Reveal>
 
             <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-12">
               <span className="flex items-center gap-2">
@@ -355,7 +361,7 @@ export default function HomePage() {
               <span>{portfolioData?.user.public_repos || 0} repositories</span>
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <Reveal as="div" className="flex gap-4 justify-center">
               <a
                 href={portfolioData?.user.html_url || "https://github.com/Ramoniswack"}
                 target="_blank"
@@ -372,15 +378,15 @@ export default function HomePage() {
               >
                 See Projects
               </a>
-            </div>
-          </div>
+            </Reveal>
+          </Reveal>
         </section>
 
         {/* Featured Projects Section - Video Grid Layout */}
         <section id="projects" className="py-20 px-6 relative overflow-hidden bg-gradient-to-br from-background via-muted/5 to-accent/5">
           <SectionWaveTransition colorScheme="purple" direction="down" intensity="medium" />
           
-          <div className="max-w-7xl mx-auto animate-on-scroll relative z-10">
+          <Reveal as="div" className="max-w-7xl mx-auto relative z-10">
               <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6 bg-gradient-to-r from-foreground via-accent to-accent2 bg-clip-text text-transparent">
                 Featured Projects
@@ -402,6 +408,7 @@ export default function HomePage() {
                 <VideoProjectCard
                   title="AttendifyPlus"
                   description="Advanced QR-Based Attendance Management System with PHP, MySQL, and modern UI for educational institutions"
+                  details={`AttendifyPlus—AttendifyPlus is a smart platform for educational institutions to manage attendance and assignments using QR codes. It features real-time analytics, role-based dashboards, instant notifications, and secure device registration—making academic management efficient and transparent.`}
                   topics={["php", "mysql", "qr-code", "attendance", "education", "bootstrap"]}
                   language="PHP"
                   stars={3}
@@ -416,6 +423,7 @@ export default function HomePage() {
                 <VideoProjectCard
                   title="Kharcha-Meter"
                   description="Smart Expense Tracker for Modern Life - Built with React Native, Expo, TypeScript & Supabase for real-time financial management"
+                  details={`Kharchameter—Smart expense tracker built with React Native`}
                   topics={["react-native", "expo", "typescript", "supabase", "finance", "mobile"]}
                   language="TypeScript"
                   stars={0}
@@ -431,6 +439,7 @@ export default function HomePage() {
                 <VideoProjectCard
                   title="aaja-ta-suree"
                   description="Modern To-Do app built with React, TypeScript & Zod - simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali"
+                  details={`aaja ta sure—Aaja Ta Sure is a modern To-Do app built with React, TypeScript & Zod — simple, type-safe, responsive. "Aaja Ta Sure" means "Today for Sure" in Nepali.`}
                   topics={["react", "typescript", "zod", "todo", "authentication", "tailwind"]}
                   language="TypeScript"
                   stars={0}
@@ -447,6 +456,7 @@ export default function HomePage() {
                 <VideoProjectCard
                   title="GadiGhar"
                   description="Premium Car Sales Platform for Nepal - Modern automotive marketplace built with React, TypeScript & PHP connecting buyers with quality vehicles"
+                  details={`GadiGhar—Car sales platform for Nepal built with React, TypeScript & PHP - Modern automotive marketplace connecting buyers with quality vehicles`}
                   topics={["react", "typescript", "php", "marketplace", "automotive", "nepal"]}
                   language="TypeScript"
                   stars={0}
@@ -461,6 +471,7 @@ export default function HomePage() {
                 <VideoProjectCard
                   title="MovieFlix"
                   description="Modern and responsive React application for movie discovery and search. Uses TMDB API with debounced search, loading spinners, and clean UI components"
+                  details={`MovieFlix—MovieFlix is a modern and responsive React application that helps users discover and search for movies with ease. It uses the TMDB API to fetch real-time movie data and includes features like debounced search, loading spinners, and clean UI components.`}
                   topics={["react", "javascript", "tmdb-api", "movies", "search", "responsive"]}
                   language="JavaScript"
                   stars={0}
@@ -486,7 +497,7 @@ export default function HomePage() {
                 <ExternalLink className="w-5 h-5" />
               </a>
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* Contact Section */}
