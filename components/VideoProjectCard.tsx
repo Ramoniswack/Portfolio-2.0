@@ -268,26 +268,19 @@ export function VideoProjectCard({
       onMouseOut={handleMouseOut}
       onClick={(e) => {
         e.stopPropagation()
-        // On touch devices or explicit mobile card, open details modal instead
-        // of attempting to play the preview which can show a blank player while
-        // metadata loads. This provides faster UX for mobile/tap users.
-        let isTouchDevice = false
-        try {
-          if (typeof navigator !== 'undefined') {
-            isTouchDevice = Boolean(navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || ('ontouchstart' in window)
-          }
-        } catch (err) {
-          isTouchDevice = false
-        }
+        const target = e.target as HTMLElement | null
+        // If click landed on interactive control (links/buttons), let them handle it
+        if (target && (target.closest('a') || target.closest('button') || target.closest('[role="button"]'))) return
 
-        if (isMobile || isTouchDevice) {
-          setDetailsOpen(true)
+        // If user clicked the video element (or something inside it), attempt playback.
+        if (target && target.closest('video')) {
+          // Ensure source is loaded before attempting to play
+          try { ensureSourceLoaded() } catch (err) {}
+          playVideo(true)
           return
         }
 
-        // user gesture fallback: force play on click for desktop
-        console.debug('[VideoProjectCard] card clicked - attempting user-gesture play')
-        playVideo(true)
+        // Otherwise, do nothing — DetailsButton opens the modal intentionally.
       }}
     >
       {/* Hovered description bubble — positioned above/outside the video */}

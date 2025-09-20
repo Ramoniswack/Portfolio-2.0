@@ -27,7 +27,9 @@ export default function CustomCursor(): null {
       width: '40px',
       height: '40px',
       pointerEvents: 'none',
-      zIndex: '9999',
+      // Put the cursor above most UI elements; keep pointer-events none so
+      // it doesn't intercept clicks.
+      zIndex: '2147483647',
       transform: 'translate3d(-9999px, -9999px, 0)',
       willChange: 'transform, opacity',
       transition: 'opacity 160ms linear',
