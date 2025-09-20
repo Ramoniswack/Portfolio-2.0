@@ -399,6 +399,26 @@ video {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 50px;
+
+/* EdgeMerge global safety & defaults */
+[data-em] {
+  /* ensure children don't cause layout shift: we use transform/opacity only */
+  --em-duration: 0.85s;
+  --em-ease: cubic-bezier(0.16,0.84,0.24,1);
+  --em-dist: 24px;
+}
+
+[data-em="out"] .em-item > * {
+  opacity: 0 !important;
+  transform: translate3d(var(--em-x,0),var(--em-y,0),0) scale(1.01) !important;
+}
+
+[data-em="in"] .em-item > * {
+  opacity: 1 !important;
+  transform: translate3d(0,0,0) scale(1) !important;
+}
+
+.em-item { display: contents; }
   padding: 8px 16px;
   margin-top: 16px;
   box-shadow: none;
@@ -654,3 +674,31 @@ html {
   pointer-events: auto;
   transform: translateY(0);
 }
+
+/* EdgeMerge global rules: keep initial state consistent on SSR and enable CSS-first reveals */
+:root {
+  --em-dist: 24px;
+}
+
+/* Default wrapper state: out => children are translated & transparent */
+[data-em="out"] .em-item > *,
+.em-item > * {
+  opacity: 0;
+  transform: translate3d(var(--em-x, 0), var(--em-y, 0), 0);
+  transition: transform 600ms cubic-bezier(0.22,1,0.36,1) var(--em-delay, 0s), opacity 600ms cubic-bezier(0.22,1,0.36,1) var(--em-delay, 0s);
+  will-change: transform, opacity;
+}
+
+[data-em="in"] .em-item > * {
+  opacity: 1;
+  transform: translate3d(0,0,0);
+}
+
+/* Direction helpers (set on wrapper via data-from) */
+[data-em][data-from="left"] { --em-x: calc(-1 * var(--em-dist)); --em-y: 0; }
+[data-em][data-from="right"] { --em-x: var(--em-dist); --em-y: 0; }
+[data-em][data-from="up"] { --em-x: 0; --em-y: var(--em-dist); }
+[data-em][data-from="down"] { --em-x: 0; --em-y: calc(-1 * var(--em-dist)); }
+
+/* Utility used by EdgeMerge to optionally add an overlay clip */
+.em-clip { position: absolute; inset: 0; pointer-events: none; }
