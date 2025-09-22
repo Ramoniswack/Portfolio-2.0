@@ -2,7 +2,7 @@ export const resumeData = {
   personalInfo: {
     name: "R.a.mohan Tiwari",
     email: "ramontiwari086@gmail.com",
-    phone: "+977-XXXXXXXXX", // Add your phone number
+    phone: "+977-9807134097", 
     location: "Pokhara, Nepal",
     website: "https://ramohan.com.np",
     github: "https://github.com/Ramoniswack"
@@ -17,19 +17,8 @@ export const resumeData = {
       location: "Pokhara, Nepal",
       period: "Ongoing",
       status: "Currently Pursuing"
-    },
-    {
-      degree: "Plus Two (+2)",
-      institution: "Oxford College of Engineering and Management",
-      location: "Gaidakot, Nepal",
-      period: "Completed"
-    },
-    {
-      degree: "Secondary Education Examination (SEE)",
-      institution: "Bhrikuting Boarding School",
-      location: "Bharatpur, Nepal",
-      period: "Completed"
     }
+
   ],
   
   experience: [

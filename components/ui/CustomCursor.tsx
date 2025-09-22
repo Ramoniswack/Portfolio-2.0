@@ -37,8 +37,12 @@ export default function CustomCursor(): null {
     // Singleton guard (prevents duplicates across HMR / remounts)
     if (anyWin.__CUSTOM_CURSOR_CREATED) return;
 
-    const prevBodyCursor = document.body.style.cursor || "";
-    document.body.style.cursor = "none"; // hide native cursor
+  // Use a singleton flag to guard against multiple cursor implementations
+  // (there are a couple of cursor modules in this repo). Also toggle the
+  // `.cursor-hidden` helper class instead of mutating inline styles so
+  // the CSS helper controls the hiding behavior consistently.
+  const prevBodyCursor = document.body.style.cursor || "";
+  try { document.body.classList.add('cursor-hidden') } catch (e) {}
 
     const root = document.createElement("div");
     root.setAttribute("data-custom-cursor", "true");
@@ -106,7 +110,7 @@ export default function CustomCursor(): null {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseleave", onMouseLeave);
       if (document.body.contains(root)) document.body.removeChild(root);
-      document.body.style.cursor = prevBodyCursor;
+      try { document.body.classList.remove('cursor-hidden') } catch (e) {}
       try {
         delete anyWin.__CUSTOM_CURSOR_CREATED;
         delete anyWin.__CUSTOM_CURSOR_ELEMENT;

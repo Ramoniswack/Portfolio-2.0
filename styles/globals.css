@@ -123,15 +123,10 @@
 }
 
 /* Custom cursor styles */
-body {
-  cursor: none !important;
-}
+/* Keep native cursor behavior by default. When the JS custom cursor is
+   actively shown, the component will toggle the `.cursor-hidden` class on
+   <body> which hides the native cursor site-wide in a controlled way. */
 
-*, *::before, *::after {
-  cursor: none !important;
-}
-
-/* Custom cursor container */
 .custom-cursor {
   pointer-events: none;
   user-select: none;
@@ -144,13 +139,12 @@ body {
   z-index: 9998;
 }
 
-/* Ensure interactive elements don't interfere */
-[data-pointer="interactive"],
-button,
-a,
-input,
-textarea,
-[role="button"],
-[tabindex] {
-  cursor: none !important;
+/* Helper class — applied by JS to hide native cursor when needed */
+.@media (hover: hover) and (pointer: fine) {
+  .cursor-hidden,
+  .cursor-hidden *,
+  .cursor-hidden *::before,
+  .cursor-hidden *::after {
+    cursor: none !important;
+  }
 }

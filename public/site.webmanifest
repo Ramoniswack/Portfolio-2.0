@@ -10,14 +10,14 @@
       "purpose": "maskable any"
     },
     {
-      "src": "/favicon.png",
-      "sizes": "32x32",
+      "src": "/favicon-circle.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon-circle.png",
-      "sizes": "180x180",
+      "src": "/favicon.png",
+      "sizes": "32x32",
       "type": "image/png",
       "purpose": "any"
     },

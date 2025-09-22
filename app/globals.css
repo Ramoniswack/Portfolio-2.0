@@ -186,37 +186,26 @@
     line-height: 1.6;
   }
 
-  /* Global cursor override - hide default cursor everywhere */
-* {
-  cursor: none !important;
-}
+  /* NOTE: Previously the project applied `cursor: none` globally which
+     caused the native cursor to disappear unexpectedly. Instead we keep
+     a utility class `.cursor-hidden` that the CustomCursor component can
+     toggle on <body> to hide the native cursor only when the JS cursor is
+     actually visible. This keeps native pointer behavior intact for users
+     who don't run the custom cursor (touch, reduced-motion, JS disabled).
+  */
 
-html, body {
-  cursor: none !important;
-}
-
-/* Additional cursor overrides for cross-browser compatibility */
-html *, body * {
-  cursor: none !important;
-}
-
-/* Specific element cursor overrides */
-button, a, input, textarea, select, [role="button"], [tabindex], .clickable {
-  cursor: none !important;
-}
-
-/* Hover state cursor overrides */
-*:hover {
-  cursor: none !important;
-}
-
-/* Enhanced custom cursor styles with better performance */
-  .cursor-hidden {
-    cursor: none !important;
-  }
-
-  .cursor-hidden * {
-    cursor: none !important;
+  /* Helper class — apply only when CustomCursor wants to hide native cursor.
+     Restrict to devices that support hover/fine pointers to avoid affecting
+     touch devices. This rule hides the native cursor for the whole page
+     (including pseudo-elements) while `.cursor-hidden` is present on <body>.
+  */
+  @media (hover: hover) and (pointer: fine) {
+    .cursor-hidden,
+    .cursor-hidden *,
+    .cursor-hidden *::before,
+    .cursor-hidden *::after {
+      cursor: none !important;
+    }
   }
 
   /* Smooth scrolling */

@@ -53,10 +53,14 @@ export default function CustomCursor(): null {
 
     root.appendChild(inner)
     document.body.appendChild(root)
-
-    // Hide native cursor
-    const prevBodyCursor = document.body.style.cursor
-    document.body.style.cursor = 'none'
+  // Immediately add the helper class so the native cursor is hidden while
+  // the JS-driven custom cursor is active. Also set an inline style as a
+  // fallback to ensure the native pointer doesn't appear on interactive
+  // elements that set their own cursor styles. We still restore the
+  // previous inline cursor value on cleanup.
+  try { document.body.classList.add('cursor-hidden') } catch (e) {}
+  const prevBodyCursor = document.body.style.cursor
+  try { document.body.style.cursor = 'none' } catch (e) {}
 
     // State
     let targetX = -9999
@@ -83,6 +87,9 @@ export default function CustomCursor(): null {
       targetX = e.clientX
       targetY = e.clientY
       if (!visible) {
+        // Ensure native cursor hidden (both via class and inline style).
+        try { document.body.classList.add('cursor-hidden') } catch (e) {}
+        try { document.body.style.cursor = 'none' } catch (e) {}
         visible = true
         root.style.opacity = '1'
       }
@@ -91,6 +98,11 @@ export default function CustomCursor(): null {
     const onMouseLeave = () => {
       visible = false
       root.style.opacity = '0'
+      // Intentionally do NOT remove `.cursor-hidden` or restore the
+      // inline body cursor here. Keeping the native cursor hidden for the
+      // lifetime of the custom cursor avoids race conditions where the
+      // native pointer briefly reappears during interactions (e.g. modals)
+      // and therefore prevents the double-cursor issue.
     }
 
     // Only flip image when the desired state changes
@@ -129,6 +141,8 @@ export default function CustomCursor(): null {
       )
       // show cursor when focusing interactive via keyboard
       if (interactive) {
+        try { document.body.classList.add('cursor-hidden') } catch (e) {}
+        try { document.body.style.cursor = 'none' } catch (e) {}
         root.style.opacity = '1'
         visible = true
         setHover(true)
@@ -137,6 +151,7 @@ export default function CustomCursor(): null {
 
     const onFocusOut = () => {
       setHover(false)
+      // keep `.cursor-hidden` in place; cleanup will restore native cursor
     }
 
     const loop = (now: number) => {
@@ -188,8 +203,9 @@ export default function CustomCursor(): null {
       document.removeEventListener('mouseover', onPointerOver)
       document.removeEventListener('focusin', onFocusIn)
       document.removeEventListener('focusout', onFocusOut)
-      try { document.body.removeChild(root) } catch (e) {}
-      document.body.style.cursor = prevBodyCursor || ''
+    try { document.body.removeChild(root) } catch (e) {}
+    try { document.body.classList.remove('cursor-hidden') } catch (e) {}
+    try { document.body.style.cursor = prevBodyCursor || '' } catch (e) {}
       try { delete (window as any)[FLAG] } catch (e) {}
     }
   }, [])

@@ -86,11 +86,13 @@ export const metadata: Metadata = {
     images: ['/developer-avatar.png'],
   },
   icons: {
+    // Prefer a single primary favicon (circle) and expose it as the
+    // shortcut/ico so browsers pick it for tabs and pinned shortcuts.
     icon: [
-      { url: '/favicon-circle.png', sizes: '180x180', type: 'image/png' },
-      { url: '/favicon.png', sizes: '48x48', type: 'image/png' },
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-circle.png', sizes: 'any', type: 'image/png' },
+    ],
+    shortcut: [
+      { url: '/favicon-circle.png' },
     ],
     apple: [
       { url: '/favicon-circle.png', sizes: '180x180', type: 'image/png' },
