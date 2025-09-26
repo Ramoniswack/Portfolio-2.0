@@ -115,7 +115,7 @@ export default function HomePage() {
           full_name: "Ramoniswack/GadiGhar",
           description: "Premium Car Sales Platform for Nepal - Modern automotive marketplace built with React, TypeScript & PHP connecting buyers with quality vehicles",
           html_url: "https://github.com/Ramoniswack/GadiGhar",
-          homepage: "https://gadibazaar.infy.uk",
+          homepage: "https://gadighar.ct.ws/",
           topics: ["react", "typescript", "php", "marketplace", "automotive", "nepal"],
           language: "TypeScript",
           stargazers_count: 0,
@@ -461,7 +461,7 @@ export default function HomePage() {
                   language="TypeScript"
                   stars={0}
                   repoUrl="https://github.com/Ramoniswack/GadiGhar"
-                  liveUrl="https://gadibazaar.infy.uk"
+                  liveUrl="https://gadighar.ct.ws/"
                   logo="/logos/Gadighar-square.png"
                   videoClip="/clips/Gadighar-clip.mp4"
                 />
