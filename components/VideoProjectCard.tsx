@@ -18,6 +18,7 @@ interface VideoProjectCardProps {
   liveUrl?: string
   logo: string
   videoClip: string
+  poster?: string
   isMobile?: boolean
 }
 
@@ -32,30 +33,24 @@ export function VideoProjectCard({
   liveUrl,
   logo,
   videoClip,
+  poster,
   isMobile = false
 }: VideoProjectCardProps) {
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const clickTimeoutRef = useRef<number | null>(null)
 
-  function DetailsButton({ title, details }: { title?: string, details?: string }) {
-    return (
-      <>
-        <button
-          onClick={(e) => { e.stopPropagation(); setDetailsOpen(true) }}
-          className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20"
-          data-pointer="interactive"
-        >
-          Details
-        </button>
-        <DetailsPopup open={detailsOpen} onClose={() => setDetailsOpen(false)} title={title}>
-          {details}
-        </DetailsPopup>
-      </>
-    )
-  }
-  // Note: mobile button sizing is intentionally handled via the `isMobile`
-  // prop which applies smaller padding and a consistent min-height so that
-  // cards like Kharcha-Meter and aaja-ta-suree have uniform action button
-  // height on small viewports.
+  // Simple handler to open details modal
+  const handleOpenDetails = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setDetailsOpen(true)
+  }, [])
+
+  // Simple handler to close details modal
+  const handleCloseDetails = useCallback(() => {
+    setDetailsOpen(false)
+  }, [])
+
   const containerRef = useRef<HTMLDivElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   // sourceRef removed - we'll set video.src directly for reliability
@@ -79,10 +74,24 @@ export function VideoProjectCard({
     const v = videoRef.current
     if (!v || isLoaded) return
     try {
-      console.debug('[VideoProjectCard] ensureSourceLoaded - assigning src', { videoClip })
-      if (v.src !== videoClip) {
-        v.src = videoClip
-      }
+      console.debug('[VideoProjectCard] ensureSourceLoaded - assigning sources', { videoClip })
+      
+      // Clear existing sources
+      while (v.firstChild) v.removeChild(v.firstChild)
+      
+      // Add WebM source if available (better compression)
+      const webmSrc = videoClip.replace('.mp4', '.webm')
+      const sourceWebm = document.createElement('source')
+      sourceWebm.src = webmSrc
+      sourceWebm.type = 'video/webm'
+      v.appendChild(sourceWebm)
+      
+      // Add MP4 source as fallback (universal compatibility)
+      const sourceMp4 = document.createElement('source')
+      sourceMp4.src = videoClip
+      sourceMp4.type = 'video/mp4'
+      v.appendChild(sourceMp4)
+      
       // load metadata
       v.load()
     } catch (e) {
@@ -113,12 +122,13 @@ export function VideoProjectCard({
     }
     // Ensure src assigned (stronger guarantee than source element)
     try {
-      if (el.src !== videoClip) {
-        el.src = videoClip
+      // Check if sources are already loaded
+      if (el.childElementCount === 0) {
+        ensureSourceLoaded()
       }
       el.load()
     } catch (e) {
-      console.error('[VideoProjectCard] error assigning src before play', e)
+      console.error('[VideoProjectCard] error loading video before play', e)
     }
     try {
       const playPromise = el.play()
@@ -253,9 +263,61 @@ export function VideoProjectCard({
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) window.clearTimeout(hoverTimeoutRef.current)
+      if (clickTimeoutRef.current) window.clearTimeout(clickTimeoutRef.current)
       pauseVideo()
     }
   }, [pauseVideo])
+
+  // Handle card click with debouncing
+  const handleCardClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement | null
+    
+    // If click landed on interactive control (links/buttons), let them handle it
+    if (target && (target.closest('a') || target.closest('button') || target.closest('[role="button"]'))) {
+      return
+    }
+
+    // Prevent multiple rapid clicks
+    if (clickTimeoutRef.current) return
+    
+    e.stopPropagation()
+    
+    // Mobile behavior: play video on click
+    if (isMobile) {
+      const videoEl = videoRef.current
+      if (videoEl && target && target.closest('.video-container')) {
+        clickTimeoutRef.current = window.setTimeout(() => {
+          clickTimeoutRef.current = null
+        }, 300)
+        
+        try {
+          ensureSourceLoaded()
+          if (isPlaying) {
+            pauseVideo()
+          } else {
+            playVideo(true)
+          }
+        } catch (err) {
+          console.error('Error toggling video playback:', err)
+        }
+      }
+      return
+    }
+
+    // Desktop: clicking video plays it
+    if (target && target.closest('video')) {
+      clickTimeoutRef.current = window.setTimeout(() => {
+        clickTimeoutRef.current = null
+      }, 300)
+      
+      try {
+        ensureSourceLoaded()
+        playVideo(true)
+      } catch (err) {
+        console.error('Error playing video:', err)
+      }
+    }
+  }, [isMobile, isPlaying, ensureSourceLoaded, playVideo, pauseVideo])
 
   return (
     <div
@@ -266,22 +328,7 @@ export function VideoProjectCard({
       data-pointer="interactive"
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
-      onClick={(e) => {
-        e.stopPropagation()
-        const target = e.target as HTMLElement | null
-        // If click landed on interactive control (links/buttons), let them handle it
-        if (target && (target.closest('a') || target.closest('button') || target.closest('[role="button"]'))) return
-
-        // If user clicked the video element (or something inside it), attempt playback.
-        if (target && target.closest('video')) {
-          // Ensure source is loaded before attempting to play
-          try { ensureSourceLoaded() } catch (err) {}
-          playVideo(true)
-          return
-        }
-
-        // Otherwise, do nothing — DetailsButton opens the modal intentionally.
-      }}
+      onClick={handleCardClick}
     >
       {/* Hovered description bubble — positioned above/outside the video */}
       <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-[90%] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -290,7 +337,7 @@ export function VideoProjectCard({
         </div>
       </div>
       {/* Video Background */}
-      <div className="absolute inset-0 bg-muted/20 video-container pointer-events-none">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 video-container pointer-events-none">
         {!isError ? (
           <video
             ref={videoRef}
@@ -298,35 +345,20 @@ export function VideoProjectCard({
             loop
             muted
             playsInline
-            preload="none"
-            style={{ backgroundColor: '#1f2937' }}
+            preload="metadata"
+            poster={poster}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-muted-foreground text-sm mb-2">Preview unavailable</div>
-              <div className="text-xs text-muted-foreground/70">Click to view project</div>
+              <div className="text-white/60 text-sm mb-2">Preview unavailable</div>
+              <div className="text-xs text-white/40">Click to view project</div>
             </div>
           </div>
         )}
 
-        {/* Loading overlay */}
-        {!isLoaded && !isError && (
-          <div className="absolute inset-0 bg-gradient-to-br from-muted/90 to-muted/70 flex items-center justify-center backdrop-blur-sm pointer-events-none">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative">
-                <div className="w-12 h-12 border-3 border-accent/30 rounded-full"></div>
-                <div className="absolute inset-0 w-12 h-12 border-3 border-accent border-t-transparent rounded-full animate-spin"></div>
-              </div>
-              <div className="text-center">
-                <div className="text-muted-foreground text-sm font-medium mb-1">Loading preview</div>
-                <div className="text-muted-foreground/70 text-xs">Please wait...</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 pointer-events-none" />
+        {/* Subtle gradient overlay for text readability - only on bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Project Info Overlay */}
@@ -336,9 +368,11 @@ export function VideoProjectCard({
             <Image
               src={logo}
               alt={`${title} logo`}
-              width={32}
-              height={32}
+              width={48}
+              height={48}
               className="w-full h-full object-contain"
+              loading="eager"
+              quality={90}
             />
           </div>
             <div className="flex-1 min-w-0">
@@ -403,14 +437,25 @@ export function VideoProjectCard({
               </a>
             )}
             {/* Details button opens a modal with extended info */}
-                <div className={`${isMobile ? 'min-h-[36px]' : ''}`}>
-                  <DetailsButton details={details || description} title={title} />
-                </div>
+            <div className={`${isMobile ? 'min-h-[36px]' : ''}`}>
+              <button
+                onClick={handleOpenDetails}
+                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 active:bg-white/30 transition-colors w-full"
+                data-pointer="interactive"
+              >
+                Details
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      
+      {/* Details Modal - Rendered at the end, outside the card content */}
+      <DetailsPopup open={detailsOpen} onClose={handleCloseDetails} title={title}>
+        {details || description}
+      </DetailsPopup>
     </div>
   )
 }

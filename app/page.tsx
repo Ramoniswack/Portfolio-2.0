@@ -166,20 +166,13 @@ export default function HomePage() {
                              hasPortfolioData && 
                              hasCorrectURL
         
-        console.log(`🔍 Home page readiness:`, {
-          isDocumentComplete,
-          hasCorrectContent,
-          hasPortfolioData,
-          hasCorrectURL,
-          isContentReady,
-          readyState: document.readyState,
-          currentURL: window.location.pathname
-        })
-        
+        // Only log once, not in loop
         if (!isContentReady) {
           setTimeout(waitForPageReady, 200)
           return
         }
+        
+        console.log(`✅ Home page ready - setting up animations`)
         
         // Ensure scroll animations are only initialized after the wave reveal
         // has completed. WaveReveal (or other transition) should set

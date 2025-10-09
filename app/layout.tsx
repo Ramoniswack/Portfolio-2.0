@@ -125,6 +125,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
         {/* Preload critical cursor assets to avoid flicker/disappearance */}
+        <link rel="preload" href="/cursors/cursor-40.png" as="image" type="image/png" />
+        <link rel="preload" href="/cursors/pointinghand-40.png" as="image" type="image/png" />
         <link rel="preload" href="/cursors/cursor.svg" as="image" type="image/svg+xml" />
         <link rel="preload" href="/cursors/pointinghand.svg" as="image" type="image/svg+xml" />
       </head>

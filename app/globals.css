@@ -186,27 +186,56 @@
     line-height: 1.6;
   }
 
-  /* NOTE: Previously the project applied `cursor: none` globally which
-     caused the native cursor to disappear unexpectedly. Instead we keep
-     a utility class `.cursor-hidden` that the CustomCursor component can
-     toggle on <body> to hide the native cursor only when the JS cursor is
-     actually visible. This keeps native pointer behavior intact for users
-     who don't run the custom cursor (touch, reduced-motion, JS disabled).
+  /* ==========================================================================
+     CSS-ONLY CUSTOM CURSOR - ZERO JAVASCRIPT OVERHEAD
+     ========================================================================== 
+     
+     This implementation uses pure CSS for custom cursors instead of 
+     JavaScript RAF loops, resulting in:
+     - Near-zero CPU usage (no performance impact)
+     - No lag on any device
+     - Hardware accelerated by browser
+     - Instant cursor response
+     - Same custom design as before
+     
+     The CustomCursor component simply adds 'custom-cursor-enabled' class
+     to <body>, and CSS handles the rest.
   */
 
-  /* Helper class — apply only when CustomCursor wants to hide native cursor.
-     Restrict to devices that support hover/fine pointers to avoid affecting
-     touch devices. This rule hides the native cursor for the whole page
-     (including pseudo-elements) while `.cursor-hidden` is present on <body>.
-  */
   @media (hover: hover) and (pointer: fine) {
-    .cursor-hidden,
-    .cursor-hidden *,
-    .cursor-hidden *::before,
-    .cursor-hidden *::after {
-      cursor: none !important;
+    /* When custom cursor is enabled, apply custom PNG cursors (better browser support than SVG) */
+    .custom-cursor-enabled {
+      /* Default cursor - custom PNG with SVG fallback */
+      cursor: url('/cursors/cursor-40.png') 20 20, url('/cursors/cursor.svg') 20 20, auto !important;
+    }
+
+    .custom-cursor-enabled * {
+      /* Inherit custom cursor for all elements */
+      cursor: url('/cursors/cursor-40.png') 20 20, url('/cursors/cursor.svg') 20 20, auto !important;
+    }
+
+    /* Hover state for interactive elements - pointing hand */
+    .custom-cursor-enabled a,
+    .custom-cursor-enabled button,
+    .custom-cursor-enabled [role="button"],
+    .custom-cursor-enabled [data-pointer="interactive"],
+    .custom-cursor-enabled input[type="submit"],
+    .custom-cursor-enabled input[type="button"],
+    .custom-cursor-enabled .cursor-pointer,
+    .custom-cursor-enabled [type="button"] {
+      cursor: url('/cursors/pointinghand-40.png') 20 20, url('/cursors/pointinghand.svg') 20 20, pointer !important;
+    }
+
+    /* Text input cursor */
+    .custom-cursor-enabled input[type="text"],
+    .custom-cursor-enabled input[type="email"],
+    .custom-cursor-enabled input[type="password"],
+    .custom-cursor-enabled input[type="search"],
+    .custom-cursor-enabled textarea {
+      cursor: url('/cursors/cursor-40.png') 20 20, url('/cursors/cursor.svg') 20 20, text !important;
     }
   }
+
 
   /* Smooth scrolling */
   html {

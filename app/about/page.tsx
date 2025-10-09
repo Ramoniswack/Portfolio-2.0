@@ -242,7 +242,7 @@ export default function AboutPage() {
           ].map((tech, index) => (
             <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }}>
               <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner">
-                <Image src={tech.src} alt={tech.label} width={40} height={40} className="w-9 h-9 object-contain" />
+                <Image src={tech.src} alt={tech.label} width={64} height={64} className="w-9 h-9 object-contain" loading="lazy" quality={85} />
               </div>
               <span className="text-foreground text-sm font-medium">{tech.label}</span>
             </div>
