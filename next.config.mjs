@@ -7,9 +7,13 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // Enable Next.js image optimization for better performance
+    unoptimized: false,
     domains: ['avatars.githubusercontent.com'],
     formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
   },
   // Performance optimizations
   experimental: {
@@ -24,13 +28,47 @@ const nextConfig = {
       },
     },
   },
-  webpack: (config, { dev }) => {
+  webpack: (config, { dev, isServer }) => {
     if (dev) {
       // Development optimizations
       config.optimization = {
         ...config.optimization,
         moduleIds: 'named',
         chunkIds: 'named',
+      }
+    }
+    
+    if (!isServer) {
+      // Client-side optimizations
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Vendor chunk for large libraries
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20,
+            },
+            // Separate chunk for GSAP (heavy animation library)
+            gsap: {
+              name: 'gsap',
+              test: /[\\/]node_modules[\\/](gsap)[\\/]/,
+              priority: 30,
+            },
+            // Common chunk for shared code
+            common: {
+              name: 'common',
+              minChunks: 2,
+              priority: 10,
+              reuseExistingChunk: true,
+            },
+          },
+        },
       }
     }
     
