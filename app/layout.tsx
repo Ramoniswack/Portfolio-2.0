@@ -120,11 +120,36 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://avatars.githubusercontent.com" />
+        <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+        {/* Preload critical cursor assets to avoid flicker/disappearance */}
+        <link rel="preload" href="/cursors/cursor.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/cursors/pointinghand.svg" as="image" type="image/svg+xml" />
+      </head>
       <body className="antialiased">
         {/* Set a global runtime flag to disable animations for performance/QA */}
         <Script id="disable-animations" strategy="beforeInteractive">
           {`(function(){ try{ window.__DISABLE_ANIMATIONS = true }catch(e){} })()`}
         </Script>
+        {/* Initialize performance monitoring in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <Script id="perf-monitor" strategy="afterInteractive">
+            {`
+              (function() {
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('load', function() {
+                    const perfData = performance.getEntriesByType('navigation')[0];
+                    if (perfData) {
+                      console.log('📊 Page Load: ' + Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms');
+                    }
+                  });
+                }
+              })();
+            `}
+          </Script>
+        )}
         <MediaPreloader />
         <CompilationProvider>
           <GlobalLoadingIndicator />
