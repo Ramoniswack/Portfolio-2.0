@@ -41,7 +41,7 @@ export default function AboutPage() {
         name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Exploring the modern web stack - React, TypeScript, Zod, and beyond.",
+        bio: "Full-stack Developer crafting web experiences with React, Laravel, Django, and modern tools.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -89,7 +89,7 @@ export default function AboutPage() {
         </h1>
         
   <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-          {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Exploring the modern web stack - React, TypeScript, Zod, and beyond."}
+          {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools."}
         </p>
 
         {/* Social Links */}
@@ -225,7 +225,7 @@ export default function AboutPage() {
       {/* Tech Stack Section (single unified grid) */}
       <section className="max-w-5xl mx-auto relative overflow-hidden my-12 z-10 px-4">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-foreground">Tech Stack</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
           {/** Each card: consistent height, centered circular icon, subtle shadow */}
           {[
             { src: '/icons/react.png', label: 'React' },
@@ -234,13 +234,17 @@ export default function AboutPage() {
             { src: '/icons/shadcnui.png', label: 'shadcn/ui' },
             { src: '/icons/java.png', label: 'Java' },
             { src: '/icons/php.png', label: 'PHP' },
+            { src: '/icons/django.svg', label: 'Django' },
+            { src: '/icons/laravel.svg', label: 'Laravel' },
+            { src: '/icons/wordpress.svg', label: 'WordPress' },
             { src: '/icons/zustand.png', label: 'Zustand' },
             { src: '/icons/zod.png', label: 'Zod' },
+            { src: '/icons/postman.svg', label: 'Postman' },
             { src: '/icons/mongodb.png', label: 'MongoDB' },
             { src: '/icons/mysql-database.png', label: 'MySQL' },
             { src: '/icons/postgresql.png', label: 'PostgreSQL' },
           ].map((tech, index) => (
-            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }}>
+            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-transparent rounded-2xl shadow-sm hover:shadow-md hover:border-accent/30 transition-all duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }} data-pointer="interactive">
               <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner">
                 <Image src={tech.src} alt={tech.label} width={64} height={64} className="w-9 h-9 object-contain" loading="lazy" quality={85} />
               </div>

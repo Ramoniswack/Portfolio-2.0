@@ -1,11 +1,22 @@
 
 import Link from "next/link"
+import type { Metadata } from "next"
 import { CustomCursor } from "@/components/CustomCursor"
 // SectionWaveTransition removed to eliminate background decorations
 import { BlogPageClient } from "@/components/BlogPageClient"
 import fs from "node:fs"
 import path from "node:path"
 import matter from "gray-matter"
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Developer insights, tutorials, and stories about web development, React, Laravel, Django, and the journey of building modern web applications.",
+  openGraph: {
+    title: "Blog | R.a.mohan Tiwari",
+    description: "Developer insights, tutorials, and stories about web development, React, Laravel, Django, and the journey of building modern web applications.",
+    type: "website",
+  },
+}
 
 async function getPosts() {
   const postsDir = path.join(process.cwd(), "app", "blogs", "posts")
@@ -95,72 +106,67 @@ export default async function BlogsPage() {
               <p className="text-muted-foreground col-span-full text-center">No blog posts found.</p>
             )}
             {posts.map((post, index) => (
-              <article 
-                key={post.slug} 
-                className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-accent/5 transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+              <Link 
+                key={post.slug}
+                href={`/blogs/${post.slug}`}
+                className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-accent/5 transition-all duration-500 hover:-translate-y-2 cursor-pointer block"
                 data-pointer="interactive"
               >
-                {/* Card Background Effect removed per request */}
-                
-                <div className="p-8 relative z-10">
-                  {/* Meta Information */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-accent"></div>
-                      <span className="text-muted-foreground text-sm font-medium tracking-wide">
-                        {post.date && new Date(post.date).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
+                <article>
+                  {/* Card Background Effect removed per request */}
+                  
+                  <div className="p-8 relative z-10">
+                    {/* Meta Information */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-accent"></div>
+                        <span className="text-muted-foreground text-sm font-medium tracking-wide">
+                          {post.date && new Date(post.date).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        </span>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-muted/10 text-accent border border-accent/10 text-xs font-semibold tracking-wide">
+                        {post.category}
                       </span>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-muted/10 text-accent border border-accent/10 text-xs font-semibold tracking-wide">
-                      {post.category}
-                    </span>
-                  </div>
 
-                  {/* Title */}
-                  <Link 
-                    href={`/blogs/${post.slug}`}
-                    data-pointer="interactive"
-                    className="block mb-4 cursor-pointer"
-                  >
-                    <h2 className="text-2xl font-heading font-bold text-foreground group-hover:text-accent transition-colors duration-300 leading-tight">
+                    {/* Title */}
+                    <h2 className="text-2xl font-heading font-bold text-foreground group-hover:text-accent transition-colors duration-300 leading-tight mb-4">
                       {post.title}
                     </h2>
-                  </Link>
 
-                  {/* Excerpt */}
-                  <p className="text-muted-foreground leading-relaxed mb-6 text-base">
-                    {post.excerpt}
-                  </p>
+                    {/* Excerpt */}
+                    <p className="text-muted-foreground leading-relaxed mb-6 text-base">
+                      {post.excerpt}
+                    </p>
 
-                  {/* Read More Link */}
-                  <div className="flex items-center justify-between">
-                    <Link 
-                      href={`/blogs/${post.slug}`}
-                      className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-all duration-200 font-medium group/link cursor-pointer"
-                      data-pointer="interactive"
-                    >
-                      <span>Read Full Story</span>
-                      <div className="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center group-hover/link:bg-accent/20 transition-colors duration-200">
-                        <svg className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                    {/* Read More Link */}
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="inline-flex items-center gap-2 text-accent group-hover:text-accent/80 transition-all duration-200 font-medium"
+                      >
+                        <span>Read Full Story</span>
+                        <div className="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-200">
+                          <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </span>
+                      
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1 h-1 rounded-full bg-muted-foreground/50"></div>
+                        <span>{post.readTime}</span>
                       </div>
-                    </Link>
-                    
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <div className="w-1 h-1 rounded-full bg-muted-foreground/50"></div>
-                      <span>{post.readTime}</span>
                     </div>
                   </div>
-                </div>
 
-                {/* Hover Border Effect */}
-                <div className="absolute inset-0 rounded-2xl border border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </article>
+                  {/* Hover Border Effect */}
+                  <div className="absolute inset-0 rounded-2xl border border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </article>
+              </Link>
             ))}
           </section>
 

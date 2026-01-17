@@ -74,7 +74,7 @@ export default function HomePage() {
         name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Exploring the modern web stack - React, TypeScript, Zod, and beyond.",
+        bio: "Full-stack Developer crafting web experiences with React, Laravel, Django, and modern tools.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",

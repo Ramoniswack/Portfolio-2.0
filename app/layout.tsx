@@ -31,28 +31,37 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ramohan.com.np'),
   title: {
-    default: "R.a.mohan Tiwari- a developer",
+    default: "R.a.mohan Tiwari - Full-Stack Developer",
     template: "%s | R.a.mohan Tiwari"
   },
-  description: "Full-Stack Developer & Creator exploring modern web technologies. React, TypeScript, Node.js specialist. Web Development Intern at Xav Technologies. Developer, Writer & Musician.",
+  description: "Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools. Web Development Intern at Xav Technologies. Developer, Writer & Musician.",
   keywords: [
     "R.a.mohan Tiwari",
+    "Ramohan Tiwari",
     "Full-Stack Developer", 
     "Web Developer",
     "React Developer",
+    "Laravel Developer",
+    "Django Developer",
     "TypeScript Developer",
+    "PHP Developer",
+    "Python Developer",
     "Frontend Developer",
     "Backend Developer",
     "Nepal Developer",
     "Pokhara Developer",
     "Portfolio",
     "Web Development",
-    "Software Engineer"
+    "Software Engineer",
+    "WordPress Developer"
   ],
-  authors: [{ name: "R.a.mohan Tiwari" }],
+  authors: [{ name: "R.a.mohan Tiwari", url: "https://ramohan.com.np" }],
   creator: "R.a.mohan Tiwari",
-  publisher: "R.a.mohan Tiwari",  robots: {
+  publisher: "R.a.mohan Tiwari",
+  category: "Technology",
+  robots: {
     index: true,
     follow: true,
     googleBot: {
@@ -63,48 +72,50 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  alternates: {
+    canonical: 'https://ramohan.com.np',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://ramohan.com.np',
-    title: 'R.a.mohan Tiwari- a developer',
-    description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
+    title: 'R.a.mohan Tiwari - Full-Stack Developer',
+    description: 'Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools.',
     siteName: 'R.a.mohan Tiwari Portfolio',
     images: [
       {
-        url: '/developer-avatar.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'R.a.mohan Tiwari - Full-Stack Developer Portfolio',
+        type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'R.a.mohan Tiwari- a developer',
-    description: 'Full-stack Developer based in Pokhara, Nepal. Crafting exceptional digital experiences with modern web technologies.',
-    images: ['/developer-avatar.png'],
+    title: 'R.a.mohan Tiwari - Full-Stack Developer',
+    description: 'Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools.',
+    images: ['/og-image.png'],
+    creator: '@ramohan_tiwari',
   },
   icons: {
-    // Prefer a single primary favicon (circle) and expose it as the
-    // shortcut/ico so browsers pick it for tabs and pinned shortcuts.
     icon: [
       { url: '/favicon-circle.png', sizes: 'any', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
     shortcut: [
       { url: '/favicon-circle.png' },
     ],
     apple: [
-      { url: '/favicon-circle.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     other: [
       { rel: 'mask-icon', url: '/favicon-circle.png', color: '#3b82f6' },
     ],
   },
   manifest: '/site.webmanifest',
-  verification: {
-    google: 'google-verification-code-here', // Add your Google verification code
-  },
 }
 
 export const viewport = {
@@ -121,14 +132,72 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}>
       <head>
+        {/* JSON-LD Structured Data for Rich Search Results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Person',
+                  '@id': 'https://ramohan.com.np/#person',
+                  name: 'R.a.mohan Tiwari',
+                  alternateName: 'Ramohan Tiwari',
+                  url: 'https://ramohan.com.np',
+                  image: 'https://ramohan.com.np/developer-avatar.png',
+                  sameAs: [
+                    'https://github.com/Ramoniswack',
+                    'https://linkedin.com/in/ramon-tiwari',
+                  ],
+                  jobTitle: 'Full-Stack Developer',
+                  worksFor: {
+                    '@type': 'Organization',
+                    name: 'Xav Technologies',
+                  },
+                  description: 'Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools.',
+                  knowsAbout: ['React', 'Laravel', 'Django', 'TypeScript', 'PHP', 'Python', 'WordPress', 'PostgreSQL', 'MySQL'],
+                  address: {
+                    '@type': 'PostalAddress',
+                    addressLocality: 'Pokhara',
+                    addressCountry: 'Nepal',
+                  },
+                },
+                {
+                  '@type': 'WebSite',
+                  '@id': 'https://ramohan.com.np/#website',
+                  url: 'https://ramohan.com.np',
+                  name: 'R.a.mohan Tiwari Portfolio',
+                  description: 'Portfolio website of R.a.mohan Tiwari - Full-Stack Developer',
+                  publisher: {
+                    '@id': 'https://ramohan.com.np/#person',
+                  },
+                  inLanguage: 'en-US',
+                },
+                {
+                  '@type': 'ProfilePage',
+                  '@id': 'https://ramohan.com.np/#profilepage',
+                  url: 'https://ramohan.com.np',
+                  name: 'R.a.mohan Tiwari - Full-Stack Developer',
+                  isPartOf: {
+                    '@id': 'https://ramohan.com.np/#website',
+                  },
+                  about: {
+                    '@id': 'https://ramohan.com.np/#person',
+                  },
+                  mainEntity: {
+                    '@id': 'https://ramohan.com.np/#person',
+                  },
+                },
+              ],
+            }),
+          }}
+        />
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
         {/* Preload critical cursor assets to avoid flicker/disappearance */}
         <link rel="preload" href="/cursors/cursor-40.png" as="image" type="image/png" />
-        <link rel="preload" href="/cursors/pointinghand-40.png" as="image" type="image/png" />
-        <link rel="preload" href="/cursors/cursor.svg" as="image" type="image/svg+xml" />
-        <link rel="preload" href="/cursors/pointinghand.svg" as="image" type="image/svg+xml" />
       </head>
       <body className="antialiased">
         {/* Set a global runtime flag to disable animations for performance/QA */}
