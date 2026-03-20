@@ -203,6 +203,7 @@ export default function AboutPage() {
           Experience
         </h2>
         <div className="space-y-8">
+          {/* Everacy Role */}
           <div
             className="bg-card border border-border rounded-2xl p-8 hover:border-accent/50 transition-all duration-300 hover:shadow-lg"
             data-pointer="interactive"
@@ -223,6 +224,23 @@ export default function AboutPage() {
                 using Next.js, Django, and Node.js.
               </p>
             </div>
+          </div>
+
+          {/* Sarbatra Inc Role */}
+          <div
+            className="bg-card border border-border rounded-2xl p-8 hover:border-accent/50 transition-all duration-300 hover:shadow-lg"
+            data-pointer="interactive"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <h3 className="text-xl font-semibold text-foreground">Full Stack Web Developer</h3>
+              <span className="text-accent font-medium">October 2025 - Present</span>
+            </div>
+            <p className="text-accent/80 font-medium mb-3">Sarbatra Inc</p>
+            <p className="text-muted-foreground leading-relaxed">
+              Designing and maintaining scalable web applications using Laravel, Next.js, and WordPress. 
+              Managing complete deployment pipelines with CI/CD automation across VPS and cPanel environments 
+              to deliver high-performance solutions for diverse clients.
+            </p>
           </div>
         </div>
       </section>

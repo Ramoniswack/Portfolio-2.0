@@ -28,6 +28,13 @@ export const resumeData = {
       period: "January 2026 - Present",
       location: "Pokhara, Nepal",
       description: "Co-founding and building Everacy — a SaaS company focused on developing scalable, real-world products. Currently leading all product development for Yummyever, a Smart POS platform for modern restaurants. Responsible for the full product lifecycle across all projects: frontend and backend development, system architecture, CI/CD pipelines, VPS configuration, and cloud deployments on Azure — using Next.js, Django, and Node.js."
+    },
+    {
+      title: "Full Stack Web Developer",
+      company: "Sarbatra Inc",
+      period: "October 2025 - Present",
+      location: "Nepal",
+      description: "Designing and maintaining scalable web applications using Laravel, Next.js, and WordPress. I manage complete development and deployment pipelines, implementing CI/CD automation and managing VPS/cPanel environments to deliver high-performance solutions."
     }
   ],
   
