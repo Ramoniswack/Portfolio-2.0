@@ -23,11 +23,11 @@ export const resumeData = {
   
   experience: [
     {
-      title: "Web Development Intern",
-      company: "Xav Technologies",
-      period: "April 2025 - May 2025",
-      location: "Nepal",
-      description: "Focused on React UI development, creating responsive and interactive user interfaces. Gained hands-on experience with modern React patterns, component architecture, and UI/UX best practices while contributing to real-world projects."
+      title: "Co-founder",
+      company: "Everacy",
+      period: "January 2026 - Present",
+      location: "Pokhara, Nepal",
+      description: "Co-founding and building Everacy — a SaaS company focused on developing scalable, real-world products. Currently leading all product development for Yummyever, a Smart POS platform for modern restaurants. Responsible for the full product lifecycle across all projects: frontend and backend development, system architecture, CI/CD pipelines, VPS configuration, and cloud deployments on Azure — using Next.js, Django, and Node.js."
     }
   ],
   
@@ -38,7 +38,7 @@ export const resumeData = {
     },
     {
       category: "Backend",
-      skills: ["PHP", "MySQL", "MongoDB", "SQL Server"]
+      skills: ["PHP", "Next.js", "Node.js", "Django", "MySQL", "MongoDB", "PostgreSQL", "SQL Server"]
     },
     {
       category: "Programming Languages",

@@ -1,5 +1,5 @@
 title: " How I Deploy Laravel Projects: From Local to Production (Step-by-Step)
-date: "2025-12-09"
+date: "2023-12-09"
 category: "Laravel"
 
 # How I Deploy Laravel Projects: From Local to Production (Step-by-Step)

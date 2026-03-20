@@ -1,5 +1,5 @@
 title: "The Day TypeScript Made Me Question Everything I Knew"
-date: "2025-09-01"
+date: "2023-09-01"
 category: "TypeScript"
 
 # The Day TypeScript Made Me Question Everything I Knew

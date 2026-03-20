@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     default: "R.a.mohan Tiwari - Full-Stack Developer",
     template: "%s | R.a.mohan Tiwari"
   },
-  description: "Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools. Web Development Intern at Xav Technologies. Developer, Writer & Musician.",
+  description: "Co-founder at Everacy. Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with Next.js, React, Django, and modern tools. Currently leading product development for Yummyever.",
   keywords: [
     "R.a.mohan Tiwari",
     "Ramohan Tiwari",
@@ -150,10 +150,10 @@ export default function RootLayout({
                     'https://github.com/Ramoniswack',
                     'https://linkedin.com/in/ramon-tiwari',
                   ],
-                  jobTitle: 'Full-Stack Developer',
+                  jobTitle: 'Co-founder at Everacy',
                   worksFor: {
                     '@type': 'Organization',
-                    name: 'Xav Technologies',
+                    name: 'Everacy',
                   },
                   description: 'Full-Stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools.',
                   knowsAbout: ['React', 'Laravel', 'Django', 'TypeScript', 'PHP', 'Python', 'WordPress', 'PostgreSQL', 'MySQL'],

@@ -41,7 +41,7 @@ export default function AboutPage() {
         name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Full-stack Developer crafting web experiences with React, Laravel, Django, and modern tools.",
+        bio: "Co-founder at Everacy. Full-stack Developer crafting web experiences with Next.js, React, Django, and modern tools.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -198,7 +198,6 @@ export default function AboutPage() {
             </div>
           </section>
 
-      {/* Experience Section */}
       <section className="max-w-6xl mx-auto mb-20 relative overflow-hidden">
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-16 text-foreground">
           Experience
@@ -209,15 +208,21 @@ export default function AboutPage() {
             data-pointer="interactive"
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-              <h3 className="text-xl font-semibold text-foreground">Web Development Intern</h3>
-              <span className="text-accent font-medium">April 2025 - May 2025</span>
+              <h3 className="text-xl font-semibold text-foreground">Co-founder</h3>
+              <span className="text-accent font-medium">January 2026 - Present</span>
             </div>
-            <p className="text-accent/80 font-medium mb-3">Xav Technologies</p>
-            <p className="text-muted-foreground leading-relaxed">
-              Focused on React UI development, creating responsive and interactive user interfaces. 
-              Gained hands-on experience with modern React patterns, component architecture, and UI/UX best practices 
-              while contributing to real-world projects.
-            </p>
+            <p className="text-accent/80 font-medium mb-3">Everacy</p>
+            <div className="text-muted-foreground leading-relaxed space-y-4">
+              <p>
+                Co-founding and building Everacy — a SaaS company focused on developing scalable, real-world products. 
+                Currently leading all product development for Yummyever, a Smart POS platform for modern restaurants.
+              </p>
+              <p>
+                Responsible for the full product lifecycle across all projects: frontend and backend development, 
+                system architecture, CI/CD pipelines, VPS configuration, and cloud deployments on Azure — 
+                using Next.js, Django, and Node.js.
+              </p>
+            </div>
           </div>
         </div>
       </section>

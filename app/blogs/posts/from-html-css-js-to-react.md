@@ -1,5 +1,5 @@
 title: "Why I'm Learning React (And It's Harder Than I Expected)"
-date: "2025-09-01"
+date: "2023-09-01"
 category: "React"
 
 # Why I'm Learning React (And It's Harder Than I Expected)
