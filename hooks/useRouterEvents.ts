@@ -25,14 +25,7 @@ function checkIfPageContentMatches(path: string): boolean {
                            currentUrl.includes(path) && 
                            isDocumentComplete
   
-  console.log(`� Next.js compilation check for ${path}:`, {
-    currentDataPage,
-    expectedPage,
-    currentUrl,
-    expectedPath: path,
-    isDocumentComplete,
-    hasCorrectContent
-  })
+  
   
   return hasCorrectContent
 }
@@ -51,17 +44,11 @@ function checkNextJSCompilationComplete(path: string): boolean {
     
     const isCompiled = hasReactHydrated && hasCorrectPageStructure && isFullyLoaded && noLoadingSpinners
     
-    console.log(`🏗️ Next.js compilation status for ${path}:`, {
-      hasReactHydrated,
-      hasCorrectPageStructure,
-      isFullyLoaded,
-      noLoadingSpinners,
-      isCompiled
-    })
+    
     
     return isCompiled
   } catch (error) {
-    console.error('Error checking Next.js compilation:', error)
+
     return false
   }
 }
@@ -82,7 +69,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
       routeStartTimeRef.current = performance.now()
       maxAttemptsRef.current = 0
       
-      console.log(`🚀 Route navigation started: ${pathname}`)
+
       onRouteStart?.(pathname)
       
       // Monitor for ACTUAL page completion with attempt limiting
@@ -92,7 +79,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
         // Keep trying until we get the right content - NO FORCED COMPLETION
         // Only stop if we've been trying for more than 60 seconds (120 attempts)
         if (maxAttemptsRef.current > 120) {
-          console.log(`⚠️ Giving up after 60 seconds of attempts for ${pathname}`)
+
           compilationCompleteRef.current = true
           isNavigatingRef.current = false
           onRouteComplete?.(pathname)
@@ -103,7 +90,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
         const hasCorrectContent = checkIfPageContentMatches(pathname)
         const isNextJSCompiled = checkNextJSCompilationComplete(pathname)
         
-        console.log(`🔍 Next.js compilation check ${maxAttemptsRef.current}/120 (${pathname}):`, {
+        :`, {
           hasCorrectContent,
           isNextJSCompiled,
           readyState: document.readyState,
@@ -116,8 +103,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
           isNavigatingRef.current = false
           
           const totalTime = routeStartTimeRef.current ? performance.now() - routeStartTimeRef.current : 0
-          console.log(`✅ Next.js compilation complete: ${pathname} (${totalTime.toFixed(2)}ms)`)
-          
+
           onRouteComplete?.(pathname)
           lastPathnameRef.current = pathname
           return
@@ -127,7 +113,7 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
         if (hasCorrectContent && !isNextJSCompiled && routeStartTimeRef.current && maxAttemptsRef.current > 10) {
           const elapsedTime = performance.now() - routeStartTimeRef.current
           if (maxAttemptsRef.current % 10 === 0) { // Only log every 10th attempt to reduce spam
-            console.warn(`⚠️ Content present but Next.js still compiling after ${elapsedTime.toFixed(2)}ms (attempt ${maxAttemptsRef.current}) - CONTINUING...`)
+
             const actualContent = document.querySelector('[data-page]')?.getAttribute('data-page') || 'unknown'
             onContentMismatch?.(pathname, actualContent)
           }

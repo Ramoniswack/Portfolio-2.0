@@ -18,29 +18,29 @@ class PagePreloadManager {
 
   markPagePreloaded(url: string) {
     this.preloadedPages.add(url)
-    console.log(`📄 Page preloaded: ${url}`)
+
   }
 
   markVideoPreloaded(videoSrc: string) {
     this.preloadedVideos.add(videoSrc)
-    console.log(`🎥 Video preloaded: ${videoSrc}`)
+
   }
 
   markAllPagesPreloaded() {
     this.allPagesPreloaded = true
-    console.log(`🎉 All pages preloaded!`)
+
     this.checkAllComplete()
   }
 
   markAllVideosPreloaded() {
     this.allVideosPreloaded = true
-    console.log(`🎬 All videos preloaded!`)
+
     this.checkAllComplete()
   }
 
   private checkAllComplete() {
     if (this.allPagesPreloaded && this.allVideosPreloaded) {
-      console.log(`🚀 Everything preloaded! Navigation and videos should be instant.`)
+
       this.notifyListeners()
     }
   }

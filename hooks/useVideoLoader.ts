@@ -55,8 +55,7 @@ export function useVideoLoader({
           // Small delay to ensure smooth playback
           setTimeout(() => {
             videoRef.current?.play().catch((error) => {
-              console.warn('Video autoplay failed:', error)
-              
+
               // Retry on user interaction
               const handleInteraction = () => {
                 videoRef.current?.play().catch(() => {})
@@ -105,7 +104,7 @@ export function useVideoLoader({
     setIsLoaded(true)
     if (isInView && autoplay && !playAttempted) {
       setPlayAttempted(true)
-      videoRef.current?.play().catch(console.warn)
+      videoRef.current?.play().catch(() => {})
     }
   }
 

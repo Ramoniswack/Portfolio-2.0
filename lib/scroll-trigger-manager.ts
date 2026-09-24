@@ -13,16 +13,14 @@ class ScrollTriggerManager {
     this.isNavigating = navigating
     
     if (navigating) {
-      console.log('🚫 Disabling scroll triggers during navigation')
-      
+
       // Simply disable scroll triggers - don't mess with timeline
       this.triggers.forEach(trigger => {
         trigger.disable()
       })
       
     } else {
-      console.log('✅ Re-enabling scroll triggers after navigation')
-      
+
       // Re-enable scroll triggers after navigation
       setTimeout(() => {
         this.triggers.forEach(trigger => {
