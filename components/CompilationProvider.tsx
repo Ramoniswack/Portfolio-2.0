@@ -51,23 +51,22 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       // Only auto-start loading if not manually started already
       if (!manualLoadingRef.current) {
         const targetPageName = getPageName(url)
-        console.log(`🔥 Auto-starting loading for: ${targetPageName}`)
+
         startPageLoad(targetPageName)
       }
     },
     onRouteComplete: (url) => {
-      console.log(`🎯 Router detected completion: ${url}, manual: ${manualLoadingRef.current}`)
-      
+
       // Clear content mismatch when route completes properly
       setShowContentMismatch(false)
       
       // For manually managed routes, ONLY complete if the page components haven't called completePageLoad yet
       if (manualLoadingRef.current) {
-        console.log(`⏳ Manual route detected completion but waiting for page component: ${url}`)
+
         // Set a backup timeout in case page component never calls completePageLoad
         setTimeout(() => {
           if (manualLoadingRef.current && isPageLoading) {
-            console.log(`⏰ Backup timeout: Auto-completing stuck manual route: ${url}`)
+
             completePageLoad()
           }
         }, 10000) // 10 second backup timeout
@@ -75,7 +74,7 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       }
       
       // Only auto-complete for non-manually managed routes
-      console.log(`🔄 Auto-completing non-manual route: ${url}`)
+
       const targetPageName = getPageName(url)
       setIsPageLoading(false)
       setIsCompiling(false)
@@ -83,20 +82,20 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
       manualLoadingRef.current = false
     },
     onRouteError: (err, url) => {
-      console.error('Route error:', err)
+
       setIsPageLoading(false)
       setIsCompiling(false)
       setShowContentMismatch(false)
       manualLoadingRef.current = false
     },
     onContentMismatch: (expectedPath, actualContent) => {
-      console.log(`🚫 Content mismatch detected: expected ${expectedPath}, got ${actualContent}`)
+
       setShowContentMismatch(true)
     }
   })
 
   const startPageLoad = (pageName: string) => {
-    console.log(`🚀 Starting page load: ${pageName}`)
+
     manualLoadingRef.current = true
     setCurrentPageName(pageName)
     setIsCompiling(true)
@@ -110,8 +109,7 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     
     // FREEZE current page animations to prevent re-triggering
     scrollTriggerManager.setNavigating(true)
-    console.log(`❄️ Froze current page animations for smooth transition to ${pageName}`)
-    
+
     // Clear any existing fallback timeout
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current)
@@ -119,7 +117,7 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
     
     // Much longer fallback timeout for Next.js compilation (up to 2 minutes)
     fallbackTimeoutRef.current = setTimeout(() => {
-      console.log(`⏰ Fallback timeout reached for ${pageName} after 2 minutes`)
+
       setIsPageLoading(false)
       setIsCompiling(false)
       manualLoadingRef.current = false
@@ -130,8 +128,7 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
   }
 
   const completePageLoad = () => {
-    console.log(`✅ Page load completed manually`)
-    
+
     // Clear any fallback timeout
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current)
@@ -150,16 +147,14 @@ export function CompilationProvider({ children }: { children: ReactNode }) {
 
       // UN-FREEZE animations for the new page
       scrollTriggerManager.setNavigating(false)
-      console.log(`🎬 Un-froze animations for new page`)
-      
+
       // Update page name to match current pathname
       setCurrentPageName(getPageName(pathname))
     }, 150)
   }
 
     const cancelLoading = () => {
-    console.log(`❌ Dismissing loading indicator for: ${currentPageName}`)
-    
+
     // Clear any fallback timeout
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current)

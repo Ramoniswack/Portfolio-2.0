@@ -25,29 +25,28 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
       // Check if this is the very first time visiting the site (fresh browser session)
       const hasEverStartedSession = sessionStorage.getItem('sessionStarted')
       
-      console.log('=== PRELOADER PROVIDER DEBUG ===')
-      console.log('Navigation type:', navigationEntry?.type)
-      console.log('Is page refresh:', isPageRefresh)
-      console.log('Has ever started session:', hasEverStartedSession)
-      
+
+
+
+
       // Show preloader only on page refresh OR very first session start
       if (isPageRefresh || !hasEverStartedSession) {
         setShouldShowPreloader(true)
-        console.log('✅ Showing preloader with page preloading')
+
       } else {
-        console.log('❌ Not showing preloader (internal navigation)')
+
       }
       
       // Mark that session has started
       sessionStorage.setItem('sessionStarted', 'true')
       setHasChecked(true)
       
-      console.log('=== END PROVIDER DEBUG ===')
+
     }
   }, [hasChecked])
 
   const setPreloaderComplete = () => {
-    console.log('🎬 Preloader marked as complete, hiding...')
+
     setShouldShowPreloader(false)
     // Enable scrolling when preloader completes
     document.body.style.overflow = "auto"

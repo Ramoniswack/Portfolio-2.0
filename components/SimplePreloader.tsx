@@ -26,7 +26,7 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
     if (hasCompletedRef.current) return
     hasCompletedRef.current = true
     
-    console.log("Starting wave transition - all content preloaded!")
+
     if (containerRef.current) {
       gsap.to(".wave", {
         y: -window.innerHeight,
@@ -41,7 +41,7 @@ export function SimplePreloader({ onComplete }: SimplePreloaderProps) {
         delay: 0.6,
         ease: "power2.out",
         onComplete: () => {
-          console.log("Preloader complete!")
+
           onComplete()
         }
       })

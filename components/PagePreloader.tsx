@@ -23,15 +23,14 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
   useEffect(() => {
     if (!isActive || hasPreloadedRef.current) return
 
-    console.log('🚀 Starting AGGRESSIVE page preloading to force Next.js compilation...')
+
     hasPreloadedRef.current = true
 
     const aggressivelyPreloadPage = async (pageInfo: { url: string, name: string }): Promise<void> => {
       const { url, name } = pageInfo
       
       return new Promise((resolve) => {
-        console.log(`� AGGRESSIVELY preloading ${name}: ${url}`)
-        
+
         // 1. Next.js router prefetch
         router.prefetch(url)
         
@@ -52,7 +51,7 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
         iframe.setAttribute('tabindex', '-1')
         
         const timeoutId = setTimeout(() => {
-          console.log(`⏰ Timeout reached for ${name}, considering it preloaded`)
+
           if (document.body.contains(iframe)) {
             document.body.removeChild(iframe)
           }
@@ -61,7 +60,7 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
         }, 15000) // 15 second timeout
         
         iframe.onload = () => {
-          console.log(`✅ SUCCESSFULLY force-loaded ${name} - Next.js should have compiled it!`)
+
           clearTimeout(timeoutId)
           pagePreloadManager.markPagePreloaded(url)
           
@@ -76,7 +75,7 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
         }
         
         iframe.onerror = () => {
-          console.log(`❌ Failed to force-load ${name}, but marking as attempted`)
+
           clearTimeout(timeoutId)
           if (document.body.contains(iframe)) {
             document.body.removeChild(iframe)
@@ -89,13 +88,12 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
         document.body.appendChild(iframe)
         iframe.src = url
         
-        console.log(`📡 Created hidden iframe for ${name} to force Next.js compilation`)
+
       })
     }
 
     const preloadEverything = async () => {
-      console.log(`🏗️ Starting COMPLETE preload of ${pagesToPreload.length} pages...`)
-      
+
       // Preload pages one by one with delays to avoid overwhelming Next.js
       for (const pageInfo of pagesToPreload) {
         await aggressivelyPreloadPage(pageInfo)
@@ -104,14 +102,13 @@ export function PagePreloader({ isActive, onAllPagesReady }: PagePreloaderProps)
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
       
-      console.log(`🎉 AGGRESSIVE preloading complete! All pages should be compiled.`)
-      
+
       // Mark all pages as preloaded
       pagePreloadManager.markAllPagesPreloaded()
       
       // Final delay to ensure everything is settled
       setTimeout(() => {
-        console.log(`� Page preloading DEFINITELY complete - navigation should be instant!`)
+
         onAllPagesReady()
       }, 2000)
     }

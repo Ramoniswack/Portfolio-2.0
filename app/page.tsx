@@ -10,7 +10,7 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { CustomEase } from "gsap/CustomEase"
 import Image from "next/image"
-import { VideoProjectCard } from "@/components/VideoProjectCard"
+import { AlternatingProjectCard } from "@/components/AlternatingProjectCard"
 import { HoverHint } from "@/components/HoverHint"
 import { ExternalLink } from "lucide-react"
 import { createScrollAnimation } from "@/lib/scroll-trigger-manager"
@@ -74,7 +74,7 @@ export default function HomePage() {
         name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Full-stack Developer crafting web experiences with React, Laravel, Django, and modern tools.",
+        bio: "Crafting modern web experiences, SaaS platforms, and AI integrations.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -152,8 +152,7 @@ export default function HomePage() {
     })
 
     if (!shouldShowPreloader) {
-      console.log(`🏠 Home page setup triggered`)
-      
+
       // More robust waiting for home page readiness
       const waitForPageReady = () => {
         const isDocumentComplete = document.readyState === 'complete'
@@ -172,8 +171,7 @@ export default function HomePage() {
           return
         }
         
-        console.log(`✅ Home page ready - setting up animations`)
-        
+
         // Ensure scroll animations are only initialized after the wave reveal
         // has completed. WaveReveal (or other transition) should set
         // sessionStorage.setItem('waveShown', '1') when finished. We poll for
@@ -196,7 +194,7 @@ export default function HomePage() {
               if (Date.now() - start > maxWait) {
                 // Give up waiting after timeout — still proceed to avoid
                 // leaving the page without animations forever.
-                console.log('⏱ wave not detected within timeout — initializing scroll animations')
+
                 setupScrollAnimations()
                 finishChecks()
                 return
@@ -206,7 +204,7 @@ export default function HomePage() {
               setTimeout(tryCall, 150)
             } catch (e) {
               // If sessionStorage isn't available for any reason, proceed.
-              console.warn('⚠️ Error while checking waveShown, proceeding', e)
+
               setupScrollAnimations()
               finishChecks()
             }
@@ -217,7 +215,7 @@ export default function HomePage() {
 
         const finishChecks = () => {
           // Wait for stability before completing
-          console.log(`⏳ Home page waiting for stability...`)
+
           setTimeout(() => {
             // Final verification
             const finalCheck = document.querySelector('[data-page="home"]') !== null &&
@@ -225,10 +223,10 @@ export default function HomePage() {
                               document.readyState === 'complete'
 
             if (finalCheck) {
-              console.log(`🏁 Home page completing load`)
+
               completePageLoad()
             } else {
-              console.log(`⚠️ Home page final check failed, retrying...`)
+
               setTimeout(waitForPageReady, 500)
             }
           }, 500)
@@ -338,7 +336,7 @@ export default function HomePage() {
               {portfolioData?.user.name || "R.a.mohan Tiwari"}
             </Reveal>
 
-            <Reveal as="p" className="text-xl md:text-2xl text-accent font-semibold mb-4">a developer</Reveal>
+            <Reveal as="p" className="text-xl md:text-2xl text-accent font-semibold mb-4">Full-Stack Developer | Co-Founder & CTO @ Everacy</Reveal>
 
             <Reveal as="p" className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               {portfolioData?.user.bio ||
@@ -393,88 +391,98 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Projects Grid - Masonry-style layout like in screenshot */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-max">
-              
-              {/* Row 1 - Desktop projects spanning different widths */}
-              <div className="lg:col-span-2">
-                <VideoProjectCard
-                  title="AttendifyPlus"
-                  description="Advanced QR-Based Attendance Management System with PHP, MySQL, and modern UI for educational institutions"
-                  details={`AttendifyPlus—AttendifyPlus is a smart platform for educational institutions to manage attendance and assignments using QR codes. It features real-time analytics, role-based dashboards, instant notifications, and secure device registration—making academic management efficient and transparent.`}
-                  topics={["php", "mysql", "qr-code", "attendance", "education", "bootstrap"]}
-                  language="PHP"
-                  stars={3}
-                  repoUrl="https://github.com/Ramoniswack/AttendifyPlus"
-                  liveUrl="https://attendifyplus.ramoniswack.com"
-                  logo="/logos/attendifyplus.png"
-                  videoClip="/clips/attendifyplus-clip.mp4"
-                />
-              </div>
+            {/* Projects Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-16 max-w-[1400px] mx-auto w-full">
+              <AlternatingProjectCard
+                title="Yummyever"
+                description="Restaurant POS platform handling IRD-compliant billing, inventory tracking, and QR ordering for 100+ restaurant clients."
+                details="Yummyever is a comprehensive restaurant POS platform handling IRD-compliant billing, inventory tracking, and QR ordering for over 100 restaurant clients. It is built to streamline operations and enhance the dining experience."
+                topics={["Next.js", "FastAPI", "Flutter", "Cloudinary", "POS"]}
+                language="TypeScript"
+                stars={0}
+                repoUrl="https://github.com/Ramoniswack"
+                liveUrl="https://app.yummyever.com"
+                logo="/logos/yummymanage_logo.png"
+                screenshots={[
+                  "/screenshots/yummymanage_dashboard.png",
+                  "/screenshots/yummymanage_orders.png",
+                  "/screenshots/yummymanage_analytics.png",
+                  "/screenshots/yummymanage_menu.png"
+                ]}
+                poster="/screenshots/Yummy_Manage_Poster.png"
+                isReversed={false}
+              />
 
-              <div className="lg:col-span-1">
-                <VideoProjectCard
-                  title="Kharcha-Meter"
-                  description="Smart Expense Tracker for Modern Life - Built with React Native, Expo, TypeScript & Supabase for real-time financial management"
-                  details={`Kharchameter—Smart expense tracker built with React Native`}
-                  topics={["react-native", "expo", "typescript", "supabase", "finance", "mobile"]}
-                  language="TypeScript"
-                  stars={0}
-                  repoUrl="https://github.com/Ramoniswack/Kharcha-Meter"
-                  liveUrl="https://kharcha-meter.vercel.app"
-                  logo="/logos/KharchaMeterFull.png"
-                  videoClip="/clips/Kharchameter-clip.mp4"
-                  isMobile={true}
-                />
-              </div>
+              <AlternatingProjectCard
+                title="Teamsever"
+                description="Internal team management and workflow tracking platform."
+                details="Teamsever is an internal team management and workflow tracking platform designed to optimize productivity and organize team operations efficiently."
+                topics={["Next.js", "Node.js", "Express", "MongoDB", "Cloudinary"]}
+                language="TypeScript"
+                stars={0}
+                repoUrl="https://github.com/Ramoniswack"
+                liveUrl="https://teamsever.everacy.com"
+                logo="/logos/teamsever_logo.png"
+                screenshots={[
+                  "/screenshots/teamsever_1.png",
+                  "/screenshots/teamsever_2.png",
+                  "/screenshots/teamsever_3.png",
+                  "/screenshots/teamsever_4.png",
+                  "/screenshots/teamsever_5.png"
+                ]}
+                poster="/screenshots/teamsever_poster.png"
+                isReversed={true}
+              />
 
-              <div className="lg:col-span-1">
-                <VideoProjectCard
-                  title="aaja-ta-suree"
-                  description="Modern To-Do app built with React, TypeScript & Zod - simple, type-safe, responsive. 'Aaja Ta Sure' means 'Today for Sure' in Nepali"
-                  details={`aaja ta sure—Aaja Ta Sure is a modern To-Do app built with React, TypeScript & Zod — simple, type-safe, responsive. "Aaja Ta Sure" means "Today for Sure" in Nepali.`}
-                  topics={["react", "typescript", "zod", "todo", "authentication", "tailwind"]}
-                  language="TypeScript"
-                  stars={0}
-                  repoUrl="https://github.com/Ramoniswack/aaja-ta-suree"
-                  liveUrl="https://aajatasure.vercel.app"
-                  logo="/logos/aajatasure.png"
-                  videoClip="/clips/aajatasure-clip.mp4"
-                  isMobile={true}
-                />
-              </div>
+              <AlternatingProjectCard
+                title="Modyfiles"
+                description="Privacy-focused file processing platform offering 85+ PDF, image, audio, and developer utilities."
+                details="Modyfiles is a privacy-focused file processing platform offering 85+ utilities. Built with Next.js, FastAPI, and PostgreSQL using client-side processing where possible and automatic server-side file deletion."
+                topics={["Next.js", "FastAPI", "PostgreSQL", "Utilities"]}
+                language="TypeScript"
+                stars={0}
+                repoUrl="https://github.com/Ramoniswack"
+                liveUrl="https://modyfiles.vercel.app"
+                logo="/logos/modyfiles_logo.jpeg"
+                screenshots={[
+                  "/screenshots/modyfiles_1.png"
+                ]}
+                poster="/screenshots/modyfiles_poster.png"
+                isReversed={true}
+              />
 
-              {/* Row 2 - More desktop projects */}
-              <div className="lg:col-span-2">
-                <VideoProjectCard
-                  title="GadiGhar"
-                  description="Premium Car Sales Platform for Nepal - Modern automotive marketplace built with React, TypeScript & PHP connecting buyers with quality vehicles"
-                  details={`GadiGhar—Car sales platform for Nepal built with React, TypeScript & PHP - Modern automotive marketplace connecting buyers with quality vehicles`}
-                  topics={["react", "typescript", "php", "marketplace", "automotive", "nepal"]}
-                  language="TypeScript"
-                  stars={0}
-                  repoUrl="https://github.com/Ramoniswack/GadiGhar"
-                  liveUrl="https://gadighar.ct.ws/"
-                  logo="/logos/Gadighar-square.png"
-                  videoClip="/clips/Gadighar-clip.mp4"
-                />
-              </div>
+              <AlternatingProjectCard
+                title="SajiloWork"
+                description="A job portal connecting employers and job seekers across Nepal."
+                details="SajiloWork is a job portal that seamlessly connects employers and job seekers across Nepal, streamlining the recruitment process for both parties."
+                topics={["Next.js", "Django", "Cloudinary", "Job Portal"]}
+                language="TypeScript"
+                stars={0}
+                repoUrl="https://github.com/Ramoniswack"
+                liveUrl="https://sajilowork.com"
+                logo="/logos/sajilowork_logo.png"
+                screenshots={[
+                  "/screenshots/sajilowork_1.png",
+                  "/screenshots/sajilowork_2.png"
+                ]}
+                poster="/screenshots/sajilowork_poster.png"
+                isReversed={false}
+              />
 
-              <div className="lg:col-span-2">
-                <VideoProjectCard
-                  title="MovieFlix"
-                  description="Modern and responsive React application for movie discovery and search. Uses TMDB API with debounced search, loading spinners, and clean UI components"
-                  details={`MovieFlix—MovieFlix is a modern and responsive React application that helps users discover and search for movies with ease. It uses the TMDB API to fetch real-time movie data and includes features like debounced search, loading spinners, and clean UI components.`}
-                  topics={["react", "javascript", "tmdb-api", "movies", "search", "responsive"]}
-                  language="JavaScript"
-                  stars={0}
-                  repoUrl="https://github.com/Ramoniswack/MovieFlix"
-                  liveUrl="https://moviee-flix.vercel.app"
-                  logo="/logos/MovieFlix Logo.png"
-                  videoClip="/clips/movie-flix-clip.mp4"
-                />
-              </div>
-
+              <AlternatingProjectCard
+                title="AttendifyPlus"
+                description="An attendance and assignment tracker for schools featuring QR check-ins and role-based dashboards."
+                details="AttendifyPlus is a smart, comprehensive platform that manages entire educational institutions—including courses, students, teachers, attendance, and assignments using QR codes. It features real-time analytics, role-based dashboards, and secure device registration."
+                topics={["PHP", "MySQL", "QR Code", "Bootstrap"]}
+                language="PHP"
+                stars={3}
+                repoUrl="https://github.com/Ramoniswack/AttendifyPlus"
+                liveUrl="https://attendifyplus.ramoniswack.com"
+                logo="/logos/attendifyplus_logo.png"
+                videoClip="/clips/attendifyplus-clip.mp4"
+                poster="/screenshots/attendifyplus_poster.png"
+                isReversed={false}
+              />
             </div>
 
             {/* Call to Action */}
@@ -528,3 +536,4 @@ export default function HomePage() {
     </>
   )
 }
+

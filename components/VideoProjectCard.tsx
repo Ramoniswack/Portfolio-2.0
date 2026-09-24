@@ -74,8 +74,7 @@ export function VideoProjectCard({
     const v = videoRef.current
     if (!v || isLoaded) return
     try {
-      console.debug('[VideoProjectCard] ensureSourceLoaded - assigning sources', { videoClip })
-      
+
       // Clear existing sources
       while (v.firstChild) v.removeChild(v.firstChild)
       
@@ -95,7 +94,7 @@ export function VideoProjectCard({
       // load metadata
       v.load()
     } catch (e) {
-      console.error('[VideoProjectCard] ensureSourceLoaded error', e)
+
     }
   }, [videoClip, isLoaded])
 
@@ -114,7 +113,7 @@ export function VideoProjectCard({
   // If force (hover/click user intent) is set, allow playback even for mobile-sized cards on desktop
   if (isMobile && isTouchDevice && !force) return
     try { el.muted = true } catch (e) {}
-    console.debug('[VideoProjectCard] playVideo start', { isInView, isLoaded })
+
     // cancel any pending clear-src
     if (clearSrcTimeoutRef.current) {
       window.clearTimeout(clearSrcTimeoutRef.current)
@@ -128,16 +127,16 @@ export function VideoProjectCard({
       }
       el.load()
     } catch (e) {
-      console.error('[VideoProjectCard] error loading video before play', e)
+
     }
     try {
       const playPromise = el.play()
       if (playPromise !== undefined) await playPromise
-      console.debug('[VideoProjectCard] playVideo played')
+
       setActiveVideo(el)
       setIsPlaying(true)
     } catch (err) {
-      console.warn('[VideoProjectCard] Preview play rejected', err, { readyState: el.readyState, error: el.error })
+
     }
   }, [ensureSourceLoaded, isPlaying, isError, isMobile, videoClip, isInView, isLoaded])
 
@@ -145,11 +144,11 @@ export function VideoProjectCard({
     const el = videoRef.current
     if (!el) return
     try {
-      console.debug('[VideoProjectCard] pauseVideo')
+
       el.pause()
       el.currentTime = 0
     } catch (e) {
-      console.error('[VideoProjectCard] pauseVideo error', e)
+
     }
     clearActiveVideo(el)
     setIsPlaying(false)
@@ -170,7 +169,7 @@ export function VideoProjectCard({
     if (hoverTimeoutRef.current) window.clearTimeout(hoverTimeoutRef.current)
     // start loading immediately so metadata is ready by the delayed play
     try {
-      console.debug('[VideoProjectCard] mouseover - trigger ensureSourceLoaded')
+
       ensureSourceLoaded()
       if (videoRef.current) {
         try { videoRef.current.preload = 'metadata' } catch (e) {}
@@ -216,7 +215,7 @@ export function VideoProjectCard({
               if (clearSrcTimeoutRef.current) window.clearTimeout(clearSrcTimeoutRef.current)
               clearSrcTimeoutRef.current = window.setTimeout(() => {
                 try {
-                  console.debug('[VideoProjectCard] clearing video src to free resources (delayed)')
+
                   if (videoRef.current) {
                     videoRef.current.removeAttribute('src')
                     while (videoRef.current.firstChild) videoRef.current.removeChild(videoRef.current.firstChild)
@@ -225,12 +224,12 @@ export function VideoProjectCard({
                     clearSrcTimeoutRef.current = null
                   }
                 } catch (e) {
-                  console.error('[VideoProjectCard] error clearing src (delayed)', e)
+
                 }
               }, 750)
             }
           } catch (e) {
-            console.error('[VideoProjectCard] error scheduling clear src', e)
+
           }
         }
       })
@@ -298,7 +297,7 @@ export function VideoProjectCard({
             playVideo(true)
           }
         } catch (err) {
-          console.error('Error toggling video playback:', err)
+
         }
       }
       return
@@ -314,7 +313,7 @@ export function VideoProjectCard({
         ensureSourceLoaded()
         playVideo(true)
       } catch (err) {
-        console.error('Error playing video:', err)
+
       }
     }
   }, [isMobile, isPlaying, ensureSourceLoaded, playVideo, pauseVideo])

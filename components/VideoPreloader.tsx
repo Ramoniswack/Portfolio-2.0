@@ -22,27 +22,26 @@ export function VideoPreloader({ isActive, onVideosReady }: VideoPreloaderProps)
   useEffect(() => {
     if (!isActive || hasPreloadedRef.current) return
 
-    console.log('🎥 Starting video preloading during greeting phase...')
+
     hasPreloadedRef.current = true
 
     const preloadVideo = async (videoSrc: string): Promise<void> => {
       return new Promise((resolve) => {
-        console.log(`📹 Preloading video: ${videoSrc}`)
-        
+
         const video = document.createElement('video')
         video.preload = 'metadata' // Load metadata but not full video for performance
         video.muted = true
         video.playsInline = true
         
         const handleCanPlay = () => {
-          console.log(`✅ Video metadata loaded: ${videoSrc}`)
+
           pagePreloadManager.markVideoPreloaded(videoSrc)
           cleanup()
           resolve()
         }
 
         const handleError = () => {
-          console.log(`❌ Failed to preload video: ${videoSrc}`)
+
           cleanup()
           resolve()
         }
@@ -64,7 +63,7 @@ export function VideoPreloader({ isActive, onVideosReady }: VideoPreloaderProps)
         // Timeout after 5 seconds to prevent hanging
         setTimeout(() => {
           if (video.readyState < 2) { // Less than HAVE_CURRENT_DATA
-            console.log(`⏰ Video preload timeout: ${videoSrc}`)
+
             cleanup()
             resolve()
           }
@@ -73,8 +72,7 @@ export function VideoPreloader({ isActive, onVideosReady }: VideoPreloaderProps)
     }
 
     const preloadAllVideos = async () => {
-      console.log(`🎬 Preloading ${videosToPreload.length} videos...`)
-      
+
       // Preload videos with limited concurrency to avoid overwhelming
       const batchSize = 2 // Preload 2 videos at a time
       for (let i = 0; i < videosToPreload.length; i += batchSize) {
@@ -89,14 +87,13 @@ export function VideoPreloader({ isActive, onVideosReady }: VideoPreloaderProps)
         }
       }
       
-      console.log(`🎉 All ${videosToPreload.length} videos preloaded!`)
-      
+
       // Mark all videos as preloaded in the global manager
       pagePreloadManager.markAllVideosPreloaded()
       
       // Notify completion
       setTimeout(() => {
-        console.log(`🚀 Video preloading complete!`)
+
         onVideosReady()
       }, 100)
     }

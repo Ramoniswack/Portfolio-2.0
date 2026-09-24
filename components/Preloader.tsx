@@ -57,15 +57,14 @@ export function Preloader({ onComplete }: PreloaderProps) {
       return
     }
 
-    console.log("Starting preloader animation with", greetings.length, "greetings")
-    
+
     let currentIndex = 0
     const duration = 150 // 150ms per greeting - faster loading
     
     // Function to show next greeting with direct DOM manipulation
     const showNextGreeting = () => {
       if (currentIndex >= greetings.length) {
-        console.log("All greetings shown, completing...")
+
         // All greetings shown, exit after short delay
         setTimeout(() => {
           gsap.to(container, {
@@ -80,8 +79,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
       }
       
       const greeting = greetings[currentIndex]
-      console.log(`Showing greeting ${currentIndex + 1}/${greetings.length}: ${greeting}`)
-      
+
       // FORCE DOM update - bypassing React completely
       if (textElement) {
         textElement.textContent = greeting

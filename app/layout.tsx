@@ -213,7 +213,7 @@ export default function RootLayout({
                   window.addEventListener('load', function() {
                     const perfData = performance.getEntriesByType('navigation')[0];
                     if (perfData) {
-                      console.log('📊 Page Load: ' + Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms');
+
                     }
                   });
                 }

@@ -6,7 +6,6 @@ import { Flip } from "gsap/Flip"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { usePathname, useRouter } from "next/navigation"
 import { useNavigation } from "./NavigationProvider"
-import { downloadResume } from "@/lib/simple-resume-download"
 import { useCompilation } from "./CompilationProvider"
 
 export function DynamicNavbar() {
@@ -207,10 +206,10 @@ export function DynamicNavbar() {
                 ref={cvButtonRef}
                 className="px-3 py-1.5 md:px-4 lg:px-6 md:py-2 lg:py-2.5 bg-accent text-accent-foreground rounded-full text-xs lg:text-sm font-medium hover:bg-accent/90 transition-all duration-300 hover:scale-105 shadow-lg"
                 data-pointer="interactive"
-                onClick={downloadResume}
+                onClick={(e) => e.preventDefault()}
               >
-                <span className="hidden lg:inline">Download CV</span>
-                <span className="lg:hidden">CV</span>
+                <span className="hidden lg:inline">Download</span>
+                <span className="lg:hidden">Download</span>
               </button>
             </div>
           )}

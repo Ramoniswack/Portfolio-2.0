@@ -41,7 +41,7 @@ export default function AboutPage() {
         name: "R.a.mohan Tiwari",
         login: "Ramoniswack",
         avatar_url: "https://avatars.githubusercontent.com/u/131946082?v=4",
-        bio: "Co-founder at Everacy. Full-stack Developer crafting web experiences with Next.js, React, Django, and modern tools.",
+        bio: "Crafting modern web experiences, SaaS platforms, and AI integrations.",
         location: "Pokhara, Nepal",
         blog: "https://ramohan.com.np",
         html_url: "https://github.com/Ramoniswack",
@@ -88,8 +88,8 @@ export default function AboutPage() {
           {/* About {portfolioData?.user.name || "R.a.mohan Tiwari"} */}
         </h1>
         
-  <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-          {portfolioData?.user.bio || "Full-stack Developer based in Pokhara, Nepal. Crafting web experiences with React, Laravel, Django, and modern tools."}
+        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+          {portfolioData?.user.bio || "Crafting modern web experiences, SaaS platforms, and AI integrations."}
         </p>
 
         {/* Social Links */}
@@ -152,41 +152,39 @@ export default function AboutPage() {
               <div>
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold mb-6 text-foreground">Developer & Creator</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">CTO & Technical Architect</h2>
                     <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                      I love learning new things and enjoy juggling code, ideas, and music. I'm passionate about deep focus and curiosity, 
-                      always exploring the intersection of technology and creativity.
+                      As the Co-Founder & CTO of Everacy Tech, I lead the technical strategy, architecture, and product delivery. I architected our flagship platform, Yummyever, scaling it from initial implementation to serving over 100 restaurant clients.
                     </p>
                   </div>
 
                   <div>
-                    <h2 className="text-2xl font-bold mb-6 text-foreground">Writer & Musician</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">AI Integration Specialist</h2>
                     <p className="text-lg text-muted-foreground leading-relaxed">
-                      I write syntax and lyrics alike. My fingers switch between keyboard and guitar strings, finding rhythm in both 
-                      code and music, creating harmony between logic and art.
+                      I specialize in building intelligent, LLM-powered applications. From integrating OpenAI and Anthropic APIs via the Model Context Protocol (MCP) to creating automated AEO/SEO content pipelines, I focus on bridging the gap between raw data and AI-driven interfaces.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="bg-card p-8 rounded-2xl">
+              <div className="bg-card p-8 rounded-2xl border border-border/20">
                 <aside>
                   <h3 className="text-xl font-semibold mb-4 text-foreground">Quick Facts</h3>
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      Self-taught developer
+                      Co-Founder & CTO @ Everacy Tech
                     </li>
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      Specialized in React & TypeScript
+                      50+ end-to-end client projects delivered
                     </li>
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      UI/UX development focused
+                      Specialized in Next.js, FastAPI & Node.js
                     </li>
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      Music & code enthusiast
+                      Extensive AI/LLM & MCP integration experience
                     </li>
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
@@ -245,35 +243,93 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Tech Stack Section (single unified grid) */}
+      {/* Tech Stack Section (Grouped) */}
       <section className="max-w-5xl mx-auto relative overflow-hidden my-12 z-10 px-4">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-foreground">Tech Stack</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 items-stretch max-w-5xl mx-auto px-4 pb-8">
-          {/** Each card: consistent height, centered circular icon, subtle shadow */}
-          {[
-            { src: '/icons/react.png', label: 'React' },
-            { src: '/icons/Tailwindcss.png', label: 'Tailwind CSS' },
-            { src: '/icons/materialui.png', label: 'Material UI' },
-            { src: '/icons/shadcnui.png', label: 'shadcn/ui' },
-            { src: '/icons/java.png', label: 'Java' },
-            { src: '/icons/php.png', label: 'PHP' },
-            { src: '/icons/django.svg', label: 'Django' },
-            { src: '/icons/laravel.svg', label: 'Laravel' },
-            { src: '/icons/wordpress.svg', label: 'WordPress' },
-            { src: '/icons/zustand.png', label: 'Zustand' },
-            { src: '/icons/zod.png', label: 'Zod' },
-            { src: '/icons/postman.svg', label: 'Postman' },
-            { src: '/icons/mongodb.png', label: 'MongoDB' },
-            { src: '/icons/mysql-database.png', label: 'MySQL' },
-            { src: '/icons/postgresql.png', label: 'PostgreSQL' },
-          ].map((tech, index) => (
-            <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-transparent rounded-2xl shadow-sm hover:shadow-md hover:border-accent/30 transition-all duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }} data-pointer="interactive">
-              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner">
-                <Image src={tech.src} alt={tech.label} width={64} height={64} className="w-9 h-9 object-contain" loading="lazy" quality={85} />
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center mb-12 text-foreground">Tech Stack</h2>
+          
+          <div className="space-y-16 max-w-5xl mx-auto pb-8">
+            {[
+              {
+                title: "Languages",
+                icons: [
+                  { src: '/icons/typescript.png', label: 'TypeScript' },
+                  { src: '/icons/js.png', label: 'JavaScript' },
+                  { src: '/icons/python.svg', label: 'Python' },
+                  { src: '/icons/php.png', label: 'PHP' },
+                  { src: '/icons/java.png', label: 'Java' },
+                ]
+              },
+              {
+                title: "Frontend & Mobile",
+                icons: [
+                  { src: '/icons/nextjs.svg', label: 'Next.js' },
+                  { src: '/icons/react.png', label: 'React' },
+                  { src: '/icons/flutter.svg', label: 'Flutter' },
+                  { src: '/icons/Tailwindcss.png', label: 'Tailwind CSS' },
+                  { src: '/icons/shadcnui.png', label: 'shadcn/ui' },
+                ]
+              },
+              {
+                title: "Backend & APIs",
+                icons: [
+                  { src: '/icons/nodejs.svg', label: 'Node.js' },
+                  { src: '/icons/fastapi.svg', label: 'FastAPI' },
+                  { src: '/icons/django.svg', label: 'Django' },
+                  { src: '/icons/laravel.svg', label: 'Laravel' },
+                  { src: '/icons/express.svg', label: 'Express.js' },
+                ]
+              },
+              {
+                title: "Data & DevOps",
+                icons: [
+                  { src: '/icons/postgresql.png', label: 'PostgreSQL' },
+                  { src: '/icons/mongodb.png', label: 'MongoDB' },
+                  { src: '/icons/redis.svg', label: 'Redis' },
+                  { src: '/icons/docker.svg', label: 'Docker' },
+                  { src: '/icons/git.svg', label: 'Git' },
+                  { src: '/icons/azure.svg', label: 'Azure' },
+                ]
+              }
+            ].map((category, catIndex) => (
+              <div key={category.title}>
+                <h3 className="text-2xl md:text-3xl font-bold mb-8 text-foreground text-center tracking-tight">{category.title}</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 items-stretch">
+                  {category.icons.map((tech, index) => (
+                    <div key={tech.label} className="flex flex-col items-center justify-center p-4 bg-card/95 border border-transparent rounded-2xl shadow-sm hover:shadow-md hover:border-accent/30 transition-all duration-200" style={{ ['--em-delay' as any]: `${index % 2 === 0 ? 0.018 : 0.026}s` }} data-pointer="interactive">
+                      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-inner p-2.5">
+                        <Image src={tech.src} alt={tech.label} width={64} height={64} className="w-full h-full object-contain" loading="lazy" quality={85} />
+                      </div>
+                      <span className="text-foreground text-sm font-medium">{tech.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <span className="text-foreground text-sm font-medium">{tech.label}</span>
+            ))}
+          </div>
+
+          <div className="max-w-5xl mx-auto mt-12 pt-16">
+            <h3 className="text-2xl md:text-3xl font-bold mb-10 text-foreground text-center tracking-tight">Advanced Architecture</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {[
+                { title: "LLM Integration", src: "/icons/python.svg" },
+                { title: "MCP Protocol", src: "/icons/anthropic.svg" },
+                { title: "AEO/SEO Optimization", src: "/icons/google.svg" },
+                { title: "CI/CD (GitHub Actions)", src: "/icons/githubactions.svg" },
+                { title: "Linux Administration", src: "/icons/linux.svg" },
+                { title: "Apache Parquet", src: "/icons/apacheparquet.svg" },
+                { title: "S3 Object Storage", src: "/icons/gcp.svg" },
+                { title: "BullMQ & Celery", src: "/icons/celery.svg" },
+                { title: "Zod Validation", src: "/icons/zod.png" },
+                { title: "REST APIs & OAuth", src: "/icons/postman.svg" }
+              ].map((skill) => (
+                <div key={skill.title} className="flex items-center gap-4 p-5 bg-card/40 border border-border/20 rounded-2xl hover:border-accent/40 hover:bg-card/80 hover:shadow-md transition-all duration-300" data-pointer="interactive">
+                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-inner p-2.5">
+                    <Image src={skill.src} alt={skill.title} width={48} height={48} className="w-full h-full object-contain" loading="lazy" />
+                  </div>
+                  <span className="text-foreground font-semibold tracking-tight">{skill.title}</span>
+                </div>
+              ))}
             </div>
-          ))}
           </div>
       </section>
 
@@ -355,14 +411,14 @@ export default function AboutPage() {
           </p>
           <div>
             <button
-              onClick={downloadResume}
+              onClick={(e) => e.preventDefault()}
               className="group inline-flex items-center gap-3 px-8 py-4 bg-accent text-accent-foreground rounded-full text-lg font-medium transition-all duration-200 hover:scale-102"
               data-pointer="interactive"
             >
               <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Download Resume
+              Download
             </button>
           </div>
       </section>
