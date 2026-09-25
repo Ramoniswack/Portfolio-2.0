@@ -210,7 +210,15 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-foreground">Co-founder</h3>
               <span className="text-accent font-medium">January 2026 - Present</span>
             </div>
-            <p className="text-accent/80 font-medium mb-3">Everacy</p>
+            <a
+              href="https://everacy.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent font-medium mb-3 inline-flex items-center gap-1 hover:underline underline-offset-4 w-fit"
+              data-pointer="interactive"
+            >
+              Everacy ↗
+            </a>
             <div className="text-muted-foreground leading-relaxed space-y-4">
               <p>
                 Co-founding and building Everacy — a SaaS company focused on developing scalable, real-world products. 

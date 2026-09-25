@@ -336,7 +336,21 @@ export default function HomePage() {
               {portfolioData?.user.name || "R.a.mohan Tiwari"}
             </Reveal>
 
-            <Reveal as="p" className="text-xl md:text-2xl text-accent font-semibold mb-4">Full-Stack Developer | Co-Founder & CTO @ Everacy</Reveal>
+            <Reveal as="div" className="text-base md:text-lg text-foreground/80 font-medium mb-4 flex flex-wrap items-center justify-center gap-x-2">
+              <span>Full-Stack Developer</span>
+              <span className="text-muted-foreground/40">•</span>
+              <span>Co-Founder &amp; CTO @</span>
+              <a
+                href="https://everacy.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-accent underline underline-offset-4 decoration-accent/40 hover:decoration-accent transition-colors inline-flex items-center gap-1"
+                data-pointer="interactive"
+              >
+                Everacy
+                <span className="text-xs">↗</span>
+              </a>
+            </Reveal>
 
             <Reveal as="p" className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               {portfolioData?.user.bio ||
