@@ -339,9 +339,9 @@ export default function HomePage() {
             <Reveal as="div" className="text-base md:text-lg text-foreground/80 font-medium mb-4 flex flex-wrap items-center justify-center gap-x-2">
               <span>Full-Stack Developer</span>
               <span className="text-muted-foreground/40">•</span>
-              <span>Co-Founder &amp; CTO @</span>
+              <span>Co-Founder &amp; CTO,</span>
               <a
-                href="https://everacy.com"
+                href="https://everacy.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-accent underline underline-offset-4 decoration-accent/40 hover:decoration-accent transition-colors inline-flex items-center gap-1"
