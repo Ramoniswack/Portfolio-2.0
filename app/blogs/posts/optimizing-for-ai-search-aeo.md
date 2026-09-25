@@ -1,191 +1,99 @@
-title: "From SEO to AEO: Engineering Web Platforms for LLM Crawlers & Answer Engines"
+title: "Why Nobody Clicks Search Results Anymore (And What I'm Doing About It)"
 date: "Mar 02, 2026"
 category: "AI & Search"
 
-# From SEO to AEO: Engineering Web Platforms for LLM Crawlers & Answer Engines
+# Why Nobody Clicks Search Results Anymore (And What I'm Doing About It)
 
-For the past twenty years, web developers and marketers played a known game called Search Engine Optimization (SEO). You researched high-volume keywords, built backlinks, optimized meta titles, and tweaked your Lighthouse scores so Google's page rank algorithm would grant you one of the coveted "10 blue links" on page one.
+A few weeks ago, I caught myself doing something I hadn't done before.
 
-In 2026, that paradigm is changing rapidly.
+I had a strange Nginx configuration bug where WebSocket connections were dropping randomly after 60 seconds. In the past, my reflex would have been to Google the error, open five different StackOverflow tabs, skim through outdated forum threads from 2017, and piece the solution together myself.
 
-Users don't browse five different websites to piece together an answer anymore. They ask **ChatGPT Search, Perplexity, Claude, or Google AI Overviews**, and the engine synthesizes a direct answer immediately, citing only 2 or 3 authoritative sources as footnotes.
+Instead, I opened Perplexity, pasted the error, and had the exact two missing `proxy_read_timeout` directives in about four seconds. I didn't click a single website link.
 
-If your web platform is only optimized for traditional keyword-matching crawlers, your content is essentially invisible to answer engines. 
+That was the moment it clicked for me: **the era of traditional SEO is ending, and we need to rethink how we write for the web.**
 
-Welcome to **Answer Engine Optimization (AEO)**—also known as Generative Engine Optimization (GEO). Here is how LLMs ingest the web, and the exact architectural patterns we implemented to maximize AI citation rates.
+When people have technical questions, they aren't scanning through ten blue links on Google anymore. They ask ChatGPT, Claude, Perplexity, or read Google's AI Overview. If an AI engine doesn't find your content easy to parse and cite, your website might as well not exist.
 
----
+Here is what I've learned about Answer Engine Optimization (AEO), and how I changed the way I build web platforms to make sure AI engines actually cite my work.
 
-## 1. How LLM Crawlers Actually Consume Your Site
+## The Fluff Era is Dead
 
-Traditional search bots like Googlebot render JavaScript, crawl the DOM, and calculate link equity algorithms. LLM retrieval crawlers (like `GPTBot`, `ClaudeBot`, `PerplexityBot`, and `Bytespider`) work differently during the RAG (Retrieval-Augmented Generation) pipeline:
+For years, SEO "gurus" taught developers to write articles like this:
 
-```
-[ User Query ] ───> [ Query Expansion & Vector Embedding ]
-                               │
-                               ▼
-            [ Fast Search Index: Top 10 Web Pages ]
-                               │
-                               ▼
-        ┌──────────────────────────────────────────────┐
-        │        LLM Parser / Scraper Pipeline         │
-        │  1. Strips CSS, Navbars, Footers, Ads        │
-        │  2. Converts HTML DOM to Clean Markdown      │
-        │  3. Chunks text into 500-1000 Token Blocks   │
-        │  4. Re-ranks chunks via Cross-Encoder        │
-        └──────────────────────┬───────────────────────┘
-                               │
-                               ▼
-                 [ Prompt Context Window ]
-                               │
-                               ▼
-         [ Final Synthesized Answer with Footnotes ]
-```
+> *"In today's fast-paced digital world, server administration is a critical component of modern software architecture. Since the dawn of the internet, reverse proxies have played an essential role. In this comprehensive guide, we will explore what Nginx is, why you might want to use it, and eventually answer the question you searched for four paragraphs from now..."*
 
-When an AI engine fetches your webpage, it strips away your gorgeous animations, glassmorphism CSS, and navigation menus. It looks purely at **semantic text density, structured data, and clarity of extraction**.
+Everyone hated reading that, but it worked because Google's algorithm rewarded word count and keyword repetition.
 
-If your page requires complex client-side JavaScript hydration just to render the main text, many AI scrapers will hit a timeout and discard your page completely.
+AI engines despise this pattern. 
 
----
+When an AI crawler (like `GPTBot` or `PerplexityBot`) scrapes your page to answer a user's question, it breaks your content into small semantic chunks. If the first two paragraphs under your heading are generic throat-clearing fluff, the relevance score for that chunk drops, and the AI cites another website that got straight to the point.
 
-## 2. Implementing the `llms.txt` Standard in Next.js
+### The Rule I Follow Now: The 20-Word Answer
 
-Just as `robots.txt` tells crawlers what they can crawl, the new community standard **`llms.txt`** provides LLMs with a clean, high-density, markdown-formatted directory of your website's core knowledge and APIs.
+Whenever I write a technical explanation or doc page now, I follow one strict rule: **answer the question in the very first sentence directly below the heading.**
 
-Instead of forcing ChatGPT or Claude to scrape complex HTML layouts, an `llms.txt` file serves pure, hyper-condensed markdown directly.
+For example:
+> **How to keep Nginx WebSockets from timing out:**  
+> Add `proxy_read_timeout 86400s;` and `proxy_http_version 1.1;` inside your `location` block to prevent Nginx from closing idle WebSocket connections after the default 60-second limit.
 
-Here is how you can implement a dynamic `llms.txt` route in Next.js App Router:
+After giving the direct answer, you can spend the next five paragraphs explaining *why* it works and the underlying details. Human readers love it because they get what they came for immediately, and AI engines love it because it’s a self-contained, high-confidence snippet ready to be quoted.
+
+## Why Client-Side SPAs Get Ignored
+
+Another big lesson I learned the hard way: heavy client-side JavaScript apps are invisible to many AI crawlers.
+
+While Googlebot has spent millions of dollars optimizing a headless Chromium instance that renders JavaScript before indexing, many AI search bots are designed for speed and cost efficiency. When an AI bot fetches a URL in real-time to answer a user's prompt, it doesn't want to wait 4 seconds for a 2MB React bundle to download, execute, and hydrate client-side state.
+
+If your page returns an empty `<div id="root"></div>` that relies on client-side `useEffect` calls to fetch content, the AI scraper will often time out, see an empty page, and move on.
+
+This is why server-side rendering (SSR) and static generation in Next.js are no longer just performance nice-to-haves—they are mandatory if you want your content indexed by modern answer engines.
+
+## The Secret Weapon: Adding an `llms.txt`
+
+One of the coolest modern standards gaining traction is **`llms.txt`**. 
+
+Think of it like `robots.txt`, but instead of telling bots what *not* to crawl, `llms.txt` gives AI models a clean, token-dense markdown file containing the core documentation and summary of your website.
+
+When an AI engine visits your domain, instead of forcing it to parse through messy navigation headers, cookie banners, and CSS styles, it can simply read `/llms.txt` directly.
+
+Here’s how easy it is to add one in Next.js using a simple route handler:
 
 ```typescript
 // app/llms.txt/route.ts
 import { NextResponse } from 'next/server'
-import { getPublishedArticles } from '@/lib/blog-service'
-import { getProductFeatures } from '@/lib/product-service'
 
 export const dynamic = 'force-static'
-export const revalidate = 86400 // Regenerate once per day
 
 export async function GET() {
-  const articles = await getPublishedArticles()
-  const features = await getProductFeatures()
+  const markdown = `# Ramon Tiwari - Full-Stack AI Engineer Portfolio
 
-  const markdownContent = `# Everacy & Yummyever Technical Documentation
+> Ramon Tiwari is a Full-Stack AI Engineer and Co-Founder/CTO at Everacy, specializing in Next.js, FastAPI, and autonomous AI integrations.
 
-> Everacy builds high-performance SaaS and POS solutions for hospitality and enterprise clients, powered by Next.js and FastAPI.
+## Core Projects & Products
+- [Yummyever](https://app.yummyever.com): Smart POS and QR ordering platform serving 100+ restaurants. Built with Next.js, FastAPI, and Redis Pub/Sub WebSockets.
+- [Teamsever](https://teamsever.com): Collaborative workspace management and team coordination tool.
+- [Modyfiles](https://modyfiles.com): Secure cloud file management platform.
 
-## Core Products
-${features
-  .map(
-    (f) => `- [${f.title}](https://everacy.com/products/${f.slug}): ${f.shortDescription}`
-  )
-  .join('\n')}
-
-## Technical Articles & Architecture Deep Dives
-${articles
-  .map(
-    (a) => `- [${a.title}](https://everacy.com/blogs/${a.slug}): Published on ${a.date}. Focuses on ${a.category}. Summary: ${a.summary}`
-  )
-  .join('\n')}
-
-## System Architecture Summary
-- **Backend**: FastAPI (Python), PostgreSQL with schema-level multi-tenancy, Redis Pub/Sub for WebSockets.
-- **Frontend**: Next.js App Router, Tailwind CSS, TypeScript.
-- **Integrations**: IRD-compliant fiscal billing, Model Context Protocol (MCP) servers, BullMQ background queues.
+## Technical Writing
+- [Scaling Yummyever to 100+ Restaurants](https://ramontiwari.com/blogs/scaling-yummyever-to-100-restaurants): Deep dive into PostgreSQL schema-per-tenant multi-tenancy and WebSocket architecture.
+- [Building Production MCP Servers](https://ramontiwari.com/blogs/building-mcp-servers-for-ai-agents): Practical guide to Anthropic's Model Context Protocol in TypeScript.
 `
 
-  return new NextResponse(markdownContent, {
-    status: 200,
+  return new NextResponse(markdown, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+      'Cache-Control': 'public, max-age=86400',
     },
   })
 }
 ```
 
-Now, when an AI agent requests `https://yourdomain.com/llms.txt`, it receives pure token-dense context without wasting compute parsing bloated HTML.
+It takes 10 minutes to set up, but it makes your site infinitely friendlier to AI agents and search bots.
 
----
+## Final Thoughts
 
-## 3. High-Citation Content Structuring (The Inverted Pyramid)
+The web isn't dying; it's just cutting out the middleman. 
 
-LLMs rank context chunks using cross-encoders that calculate semantic similarity to the user's question. If your explanation begins with two paragraphs of fluff (*"In today's fast-paced digital world..."*), the chunk's relevance score drops, and the AI cites another website instead.
+We spent two decades writing content stuffed with keywords to please a search engine algorithm, often at the expense of human clarity. The irony of the AI search shift is that the best way to optimize for AI is actually to **write more directly, more concisely, and more honestly for humans**.
 
-To maximize citation frequency, structure your content with the **Direct Answer Pattern**:
-
-### Bad Structure (Low AI citation probability):
-> *"Databases are very important for modern applications. When considering how to handle multiple clients in a system, there are various philosophical viewpoints. Many developers disagree on whether single tenancy or multi-tenancy is preferable..."*
-
-### Good Structure (High AI citation probability):
-> **Multi-tenancy in PostgreSQL is most effectively achieved using a hybrid schema-per-tenant pattern.** Under this architecture, global tenant metadata resides in a shared `public` schema, while tenant-specific operational tables live in isolated schemas (`tenant_<id>`). This guarantees complete data isolation without the overhead of spinning up separate database instances.
-
-### Key Rules for AI-Friendly Formatting:
-1. **The 30-Word Direct Answer Rule**: Answer the primary question immediately in the first sentence beneath every H2 heading.
-2. **Markdown Tables for Comparative Data**: AI models love tables. When comparing tech stacks, benchmarks, or pricing, markdown tables are consistently extracted into direct answers:
-   ```markdown
-   | Multi-Tenancy Model | Data Isolation | Infrastructure Cost | Migration Complexity |
-   | :--- | :--- | :--- | :--- |
-   | Shared DB & Table | Low (Row-Level) | Minimal | Low |
-   | Schema-Per-Tenant | High (Schema Level) | Moderate | Medium |
-   | Database-Per-Tenant| Absolute | High | High |
-   ```
-3. **Explicit Quantifiable Data**: Avoid vague adjectives like *"very fast"* or *"highly scalable"*. Use hard figures: *"reduced latency from 3.2s to 42ms"* or *"scaled to 120,000 requests per minute"*. LLMs prioritize numerical facts when answering factual inquiries.
-
----
-
-## 4. Rich JSON-LD Structured Data for Generative Engines
-
-While LLMs can read plain text, structured schema markup provides definitive, un-hallucinated verification of entities, authors, and facts.
-
-In Next.js, inject rich `TechArticle` and `SoftwareApplication` JSON-LD schemas directly into the server component:
-
-```tsx
-// app/blogs/[slug]/page.tsx
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getBlogPost(params.slug)
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: post.title,
-    description: post.summary,
-    author: {
-      '@type': 'Person',
-      name: 'R.a.mohan Tiwari',
-      jobTitle: 'Co-Founder & CTO',
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Everacy',
-        url: 'https://everacy.com',
-      },
-    },
-    datePublished: post.date,
-    proficiencyLevel: 'Expert',
-    dependencies: 'Next.js, FastAPI, PostgreSQL, Redis',
-    articleBody: post.content,
-  }
-
-  return (
-    <article className="prose max-w-4xl mx-auto px-4 py-12">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <h1>{post.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post.htmlContent }} />
-    </article>
-  )
-}
-```
-
----
-
-## Summary: The New Rules of Visibility
-
-In an AI-first web:
-- **Server-rendered HTML or pure Markdown is non-negotiable**. Heavy client-rendered SPAs get skipped by fast retrieval scrapers.
-- **Provide an `llms.txt` endpoint** to offer a direct, token-optimized directory of your platform.
-- **Structure content with direct answers first**, followed by technical depth and markdown tables.
-- **Back up claims with hard numbers**, reproducible code snippets, and JSON-LD schema metadata.
-
-By designing for both human readers and AI answer engines, your technical knowledge base becomes the definitive source that LLMs cite, rather than an afterthought lost in the archives.
+Answer the question immediately, cut out the filler, server-render your pages, and let the machines do the rest.
