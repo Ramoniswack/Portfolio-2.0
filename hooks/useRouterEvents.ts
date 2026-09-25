@@ -90,13 +90,6 @@ export function useRouterEvents({ onRouteStart, onRouteComplete, onRouteError, o
         const hasCorrectContent = checkIfPageContentMatches(pathname)
         const isNextJSCompiled = checkNextJSCompilationComplete(pathname)
         
-        :`, {
-          hasCorrectContent,
-          isNextJSCompiled,
-          readyState: document.readyState,
-          compilationComplete: compilationCompleteRef.current
-        })
-        
         // ONLY complete when Next.js has actually finished compiling
         if (hasCorrectContent && isNextJSCompiled && !compilationCompleteRef.current) {
           compilationCompleteRef.current = true
