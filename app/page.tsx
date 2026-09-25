@@ -337,7 +337,7 @@ export default function HomePage() {
             </Reveal>
 
             <Reveal as="div" className="text-base md:text-lg text-foreground/80 font-medium mb-4 flex flex-wrap items-center justify-center gap-x-2">
-              <span>Full-Stack Developer</span>
+              <span>Full-Stack AI Engineer</span>
               <span className="text-muted-foreground/40">•</span>
               <span>Co-Founder &amp; CTO,</span>
               <a
